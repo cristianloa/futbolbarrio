@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Torneo Rey de la Cancha</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #000;
+    --bg-secondary: #0a0a0a;
+    --bg-tertiary: rgba(255, 255, 255, 0.05);
+    --text-primary: #fff;
+    --text-secondary: #888;
+    --text-muted: #666;
+    --border-color: #333;
+    --border-light: #444;
+    --color-amarillo: #ffcc00;
+    --color-verde: #00ff00;
+    --color-rojo: #ff0000;
+    --color-azul: #0088ff;
+    --color-morado: #ff00ff;
+    --shadow-glow: rgba(0, 255, 0, 0.4);
+    --input-bg: transparent;
+    --btn-bg: transparent;
+    --overlay-bg: rgba(0, 0, 0, 0.95);
+  }
+
+  [data-theme="light"] {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #fff;
+    --bg-tertiary: rgba(0, 0, 0, 0.05);
+    --text-primary: #000;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --border-color: #ddd;
+    --border-light: #ccc;
+    --color-amarillo: #cc9900;
+    --color-verde: #00aa00;
+    --color-rojo: #cc0000;
+    --color-azul: #0066cc;
+    --color-morado: #cc00cc;
+    --shadow-glow: rgba(0, 170, 0, 0.3);
+    --input-bg: #fff;
+    --btn-bg: #fff;
+    --overlay-bg: rgba(245, 245, 245, 0.95);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Orbitron', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  body { display: flex; justify-content: center; align-items: center; }
+  
+  .pantalla {
+    display: none;
+    width: 100vw; height: 100vh;
+    background: var(--bg-primary);
+    position: relative;
+    flex-direction: column;
+  }
+  
+  .pantalla.activa { display: flex; }
+  
+  /* ============ HEADER ============ */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1vh 2vw;
+    height: 10vh;
+    min-height: 60px;
+    background: var(--bg-primary);
+    border-bottom: 2px solid var(--border-color);
+    flex-shrink: 0;
+    gap: 1vw;
+  }
+  
+  .hora-actual {
+    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    color: var(--color-amarillo);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  
+  .titulo-header {
+    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    color: var(--color-amarillo);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .header-botones { display: flex; gap: 1vw; align-items: center; }
+  
+  .btn-icono {
+    width: 6vh; height: 6vh;
+    min-width: 38px; min-height: 38px;
+    max-width: 50px; max-height: 50px;
+    border: 2px solid var(--text-primary);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  
+  .btn-icono:active { transform: scale(0.9); background: rgba(128, 128, 128, 0.3); }
+  
+  .scroll-content { flex: 1; overflow-y: auto; padding: 2vh 4vw; }
+  
+  .config-contenido {
+    flex: 1;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 4vh 4vw;
+    gap: 3vh;
+  }
+  
+  .config-contenido h1 {
+    font-size: clamp(1.3rem, 4vw, 2.2rem);
+    color: var(--color-amarillo);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+  
+  .config-form {
+    width: 100%; max-width: 500px;
+    display: flex; flex-direction: column; gap: 2vh;
+  }
+  
+  .config-form label { font-size: clamp(0.85rem, 2vw, 1rem); color: var(--text-primary); }
+  
+  .config-form input {
+    padding: 1.5vh 1vw;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    text-align: center;
+    background: var(--input-bg);
+    color: var(--color-verde);
+    border: 2px solid var(--text-primary);
+    border-radius: 0.5vh;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+  }
+  
+  /* ============ BOTONES ============ */
+  .btn {
+    border: 2px solid var(--text-primary);
+    border-radius: 0.4vh;
+    background: var(--btn-bg);
+    color: var(--text-primary);
+    font-size: clamp(0.75rem, 1.6vw, 1rem);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    padding: 0.8vh 0.8vw;
+    min-height: 5vh;
+    text-transform: uppercase;
+    gap: 0.3vw;
+  }
+  
+  .btn:active { transform: scale(0.95); background: rgba(128, 128, 128, 0.3); }
+  
+  .btn-full { width: 100%; }
+  .btn-primary { background: rgba(0, 255, 0, 0.2); border-color: var(--color-verde); color: var(--color-verde); }
+  .btn-warning { background: rgba(255, 204, 0, 0.2); border-color: var(--color-amarillo); color: var(--color-amarillo); }
+  .btn-danger { background: rgba(255, 0, 0, 0.2); border-color: var(--color-rojo); color: var(--color-rojo); }
+  .btn-info { background: rgba(0, 136, 255, 0.2); border-color: var(--color-azul); color: var(--color-azul); }
+  .btn-mega {
+    min-height: 8vh;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    border-width: 3px;
+    letter-spacing: 0.1em;
+  }
+  
+  .seccion-titulo {
+    font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+    color: var(--color-amarillo);
+    margin: 2vh 0 1vh;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .lista-equipos { display: flex; flex-direction: column; gap: 1vh; margin-bottom: 3vh; }
+  
+  .equipo-item {
+    display: flex; align-items: center; gap: 1vw;
+    padding: 1.5vh 1vw;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: 0.5vh;
+  }
+  
+  .equipo-numero { font-size: clamp(0.9rem, 2vw, 1.2rem); color: var(--text-secondary); min-width: 30px; }
+  .equipo-nombre { flex: 1; font-size: clamp(0.95rem, 2.2vw, 1.2rem); color: var(--text-primary); font-weight: 700; }
+  
+  .equipo-eliminar {
+    width: 5vh; height: 5vh;
+    border: 2px solid var(--color-rojo);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-rojo);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  
+  .agregar-equipo-form { display: flex; gap: 1vw; margin-bottom: 2vh; }
+  
+  .agregar-equipo-form input {
+    flex: 1;
+    padding: 1.5vh 1vw;
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    background: var(--input-bg);
+    border: 2px solid var(--text-primary);
+    color: var(--text-primary);
+    border-radius: 0.5vh;
+    font-family: 'Orbitron', sans-serif;
+  }
+  
+  .orden-opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 1vw; margin: 2vh 0; }
+  
+  /* ============ BRACKET FIXTURE ============ */
+  .fixture-contenido {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 2vh 2vw;
+    background: var(--bg-secondary);
+  }
+  
+  .fixture-header-info {
+    text-align: center;
+    margin-bottom: 2vh;
+    padding-bottom: 1.5vh;
+    border-bottom: 2px solid var(--border-color);
+  }
+  
+  .fixture-header-info h2 {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: var(--color-amarillo);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5vh;
+  }
+  
+  .fixture-header-info .subtitulo {
+    font-size: clamp(0.75rem, 1.6vw, 0.95rem);
+    color: var(--text-secondary);
+  }
+  
+  .bracket-wrapper {
+    display: flex;
+    align-items: center;
+    min-width: 100%;
+    padding: 2vh 1vw;
+    gap: 0;
+  }
+  
+  .bracket-columna {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: clamp(130px, 20vw, 190px);
+    padding: 0 0.5vw;
+    position: relative;
+  }
+  
+  .bracket-columna-titulo {
+    text-align: center;
+    font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+    color: var(--color-amarillo);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5vh;
+    font-weight: 700;
+    padding-bottom: 0.8vh;
+    border-bottom: 2px solid var(--border-color);
+  }
+  
+  .bracket-partidos {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2vh;
+    flex: 1;
+    justify-content: space-around;
+  }
+  
+  .bracket-partido {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: 0.8vh;
+    padding: 0.8vh 0.6vw;
+    position: relative;
+    transition: all 0.3s;
+    min-height: 7vh;
+  }
+  
+  .bracket-partido.en-curso {
+    border-color: var(--color-verde);
+    background: rgba(0, 255, 0, 0.1);
+    box-shadow: 0 0 15px var(--shadow-glow);
+    animation: pulsoFixture 2s infinite;
+  }
+  
+  .bracket-partido.terminado {
+    border-color: var(--color-azul);
+    background: rgba(0, 136, 255, 0.1);
+  }
+  
+  .bracket-partido.esquivo {
+    border-color: var(--color-morado);
+    background: rgba(255, 0, 255, 0.05);
+  }
+  
+  .bracket-partido.pendiente {
+    border-color: var(--border-light);
+    opacity: 0.7;
+  }
+  
+  .bracket-partido.campeon-partido {
+    border-color: var(--color-amarillo);
+    background: rgba(255, 204, 0, 0.15);
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+  }
+  
+  @keyframes pulsoFixture {
+    0%, 100% { box-shadow: 0 0 15px var(--shadow-glow); }
+    50% { box-shadow: 0 0 25px var(--shadow-glow); }
+  }
+  
+  .bracket-partido-numero {
+    font-size: clamp(0.55rem, 1.1vw, 0.7rem);
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 0.4vh;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .bracket-partido-hora {
+    font-size: clamp(0.5rem, 1vw, 0.65rem);
+    color: var(--color-azul);
+    text-align: center;
+    margin-bottom: 0.4vh;
+    font-weight: 500;
+  }
+  
+  .bracket-equipo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4vh 0.3vw;
+    margin: 0.3vh 0;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 0.4vh;
+    font-size: clamp(0.65rem, 1.3vw, 0.8rem);
+    border-left: 3px solid transparent;
+  }
+  
+  [data-theme="light"] .bracket-equipo {
+    background: rgba(255, 255, 255, 0.6);
+  }
+  
+  .bracket-equipo.ganador {
+    background: rgba(0, 255, 0, 0.15);
+    border-left-color: var(--color-verde);
+  }
+  
+  .bracket-equipo.por-definir {
+    background: var(--bg-tertiary);
+    border-left-color: var(--text-muted);
+    border-style: dashed;
+  }
+  
+  .bracket-equipo-nombre {
+    flex: 1;
+    color: var(--text-primary);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 0.3vw;
+  }
+  
+  .bracket-equipo.ganador .bracket-equipo-nombre {
+    font-weight: 700;
+    color: var(--color-verde);
+  }
+  
+  .bracket-equipo.por-definir .bracket-equipo-nombre {
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+  
+  .bracket-equipo-goles {
+    font-size: clamp(0.85rem, 1.8vw, 1.05rem);
+    font-weight: 900;
+    color: var(--text-primary);
+    min-width: 22px;
+    text-align: right;
+  }
+  
+  .bracket-equipo.ganador .bracket-equipo-goles { color: var(--color-verde); }
+  .bracket-equipo.por-definir .bracket-equipo-goles { color: var(--text-muted); }
+  
+  .bracket-conector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(25px, 3.5vw, 45px);
+    color: var(--text-muted);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+  
+  .bracket-campeon {
+    min-width: clamp(110px, 16vw, 170px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2vh 1vw;
+  }
+  
+  .bracket-campeon-trofeo {
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    margin-bottom: 1vh;
+  }
+  
+  .bracket-campeon-label {
+    font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+    color: var(--color-amarillo);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 1vh;
+    text-align: center;
+  }
+  
+  .bracket-campeon-nombre {
+    font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+    color: var(--color-verde);
+    font-weight: 900;
+    text-align: center;
+    text-shadow: 0 0 10px var(--color-verde);
+    word-break: break-word;
+  }
+  
+  .bracket-campeon-nombre.vacio {
+    color: var(--text-muted);
+    text-shadow: none;
+    font-style: italic;
+  }
+  
+  .fixture-acciones {
+    display: flex;
+    justify-content: center;
+    gap: 1vw;
+    padding: 1.5vh 2vw;
+    border-top: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    flex-wrap: wrap;
+  }
+  
+  .fixture-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1vw;
+    justify-content: center;
+    padding: 1.5vh;
+    background: var(--bg-tertiary);
+    border-radius: 0.5vh;
+    margin-top: 2vh;
+  }
+  
+  .leyenda-item {
+    display: flex; align-items: center; gap: 0.5vw;
+    font-size: clamp(0.65rem, 1.3vw, 0.8rem);
+    color: var(--text-secondary);
+  }
+  
+  .leyenda-color {
+    width: 13px; height: 13px;
+    border-radius: 0.3vh;
+    border: 2px solid;
+  }
+  
+  .leyenda-color.pendiente { border-color: var(--border-light); background: var(--bg-tertiary); }
+  .leyenda-color.curso { border-color: var(--color-verde); background: rgba(0, 255, 0, 0.1); }
+  .leyenda-color.terminado { border-color: var(--color-azul); background: rgba(0, 136, 255, 0.1); }
+  .leyenda-color.esquivo { border-color: var(--color-morado); background: rgba(255, 0, 255, 0.05); }
+  .leyenda-color.campeon { border-color: var(--color-amarillo); background: rgba(255, 204, 0, 0.15); }
+  
+  /* ============ MARCADOR ============ */
+  .marcador-contenido {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1vh 2vw;
+    overflow-y: auto;
+  }
+  
+  .equipos-enfrentamiento {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1vh;
+    gap: 2vw;
+  }
+  
+  .equipo-marcador { flex: 1; text-align: center; padding: 1vh 0.5vw; }
+  .equipo-marcador .nombre {
+    font-size: clamp(0.75rem, 1.8vw, 1.1rem);
+    color: var(--text-primary);
+    margin-bottom: 0.5vh;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .equipo-marcador .goles {
+    font-size: clamp(2.5rem, 10vw, 6rem);
+    font-weight: 900;
+    color: var(--color-verde);
+    line-height: 1;
+  }
+  
+  .vs { font-size: clamp(1.2rem, 3vw, 2rem); color: var(--text-muted); font-weight: 700; }
+  
+  .contador-tiempo { width: 100%; text-align: center; margin: 1vh 0; flex: 1; display: flex; align-items: center; justify-content: center; }
+  
+  .tiempo-display {
+    font-size: clamp(5rem, 25vw, 12rem);
+    font-weight: 900;
+    color: var(--color-verde);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  
+  .tiempo-display.aviso {
+    color: var(--color-rojo);
+    animation: parpadeo 0.5s infinite;
+  }
+  
+  .tiempo-display.empate {
+    color: var(--color-amarillo);
+    animation: parpadeoEmpate 1s infinite;
+  }
+  
+  @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  @keyframes parpadeoEmpate { 
+    0%, 100% { opacity: 1; text-shadow: 0 0 20px var(--color-amarillo); } 
+    50% { opacity: 0.7; text-shadow: 0 0 40px var(--color-amarillo); } 
+  }
+  
+  .empate-aviso {
+    background: rgba(255, 204, 0, 0.15);
+    border: 2px solid var(--color-amarillo);
+    border-radius: 0.8vh;
+    padding: 1vh 2vw;
+    margin: 1vh 0;
+    text-align: center;
+    font-size: clamp(0.8rem, 1.8vw, 1rem);
+    color: var(--color-amarillo);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .controles-goles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1vw;
+    width: 100%;
+    max-width: 700px;
+    margin: 1vh 0;
+  }
+  
+  .btn-gol-container { display: flex; flex-direction: column; gap: 0.4vh; }
+  
+  .btn-gol {
+    padding: 1vh 0.5vw;
+    font-size: clamp(0.9rem, 2vw, 1.3rem);
+    border: 3px solid;
+    border-radius: 0.8vh;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    transition: all 0.2s;
+    min-height: 5vh;
+  }
+  
+  .btn-gol-equipo1 { border-color: var(--color-azul); color: var(--color-azul); }
+  .btn-gol-equipo1:active { background: rgba(0, 136, 255, 0.3); }
+  .btn-gol-equipo2 { border-color: var(--color-rojo); color: var(--color-rojo); }
+  .btn-gol-equipo2:active { background: rgba(255, 0, 0, 0.3); }
+  
+  .btn-quitar-gol {
+    padding: 0.6vh 0.5vw;
+    font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+    border: 2px solid var(--text-muted);
+    border-radius: 0.5vh;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 500;
+    min-height: 3.5vh;
+  }
+  
+  .btn-quitar-gol:active { background: rgba(128, 128, 128, 0.2); color: var(--text-primary); }
+  
+  .historial-goles {
+    width: 100%; max-width: 700px;
+    margin: 1vh 0;
+    padding: 1vh;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5vh;
+    max-height: 12vh;
+    overflow-y: auto;
+  }
+  
+  .historial-goles-titulo {
+    font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 0.5vh;
+    text-align: center;
+  }
+  
+  .gol-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4vh 0.5vw;
+    font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .gol-item:last-child { border-bottom: none; }
+  .gol-item .minuto { color: var(--color-amarillo); font-weight: 700; min-width: 45px; }
+  .gol-item .equipo-gol { color: var(--text-primary); flex: 1; }
+  .gol-item .equipo-gol.eq1 { color: var(--color-azul); }
+  .gol-item .equipo-gol.eq2 { color: var(--color-rojo); }
+  
+  .controles-partido {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8vw;
+    width: 100%;
+    max-width: 700px;
+    padding-top: 1vh;
+  }
+  
+  /* ============ ESPERA ============ */
+  .espera-contenido {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4vh 4vw;
+  }
+  
+  .espera-titulo {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: var(--color-amarillo);
+    margin-bottom: 2vh;
+    text-align: center;
+  }
+  
+  .espera-tiempo {
+    font-size: clamp(4rem, 15vw, 8rem);
+    color: var(--color-azul);
+    margin-bottom: 3vh;
+    font-weight: 900;
+  }
+  
+  .espera-info { text-align: center; margin-bottom: 3vh; font-size: clamp(0.85rem, 2vw, 1.1rem); }
+  .espera-info .linea { margin: 1vh 0; color: var(--text-primary); }
+  .espera-info .destacado-verde { color: var(--color-verde); font-weight: 700; }
+  .espera-info .destacado-amarillo { color: var(--color-amarillo); font-weight: 700; }
+  
+  /* ============ HISTORIAL ============ */
+  .partido-historial {
+    padding: 1.5vh 1vw;
+    margin-bottom: 1.5vh;
+    background: var(--bg-tertiary);
+    border-left: 4px solid var(--border-color);
+    border-radius: 0 0.5vh 0.5vh 0;
+  }
+  
+  .partido-historial.esquivo { border-left-color: var(--color-morado); }
+  .partido-historial .info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5vh; flex-wrap: wrap; gap: 0.5vh; }
+  .partido-historial .numero { font-size: clamp(0.75rem, 1.8vw, 0.95rem); color: var(--text-secondary); }
+  .partido-historial .tipo { font-size: clamp(0.65rem, 1.3vw, 0.8rem); color: var(--color-morado); text-transform: uppercase; }
+  .partido-historial .horario { font-size: clamp(0.65rem, 1.3vw, 0.8rem); color: var(--color-azul); }
+  .partido-historial .resultado { font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-primary); font-weight: 700; }
+  .partido-historial .ganador { color: var(--color-verde); font-size: clamp(0.8rem, 1.8vw, 1rem); }
+  
+  /* ============ CAMPEÓN ============ */
+  .campeon-contenido {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4vh 4vw;
+    text-align: center;
+  }
+  
+  .campeon-titulo {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: var(--color-amarillo);
+    margin-bottom: 2vh;
+    text-transform: uppercase;
+  }
+  
+  .campeon-nombre {
+    font-size: clamp(2rem, 7vw, 4rem);
+    color: var(--color-verde);
+    font-weight: 900;
+    margin-bottom: 2vh;
+    text-shadow: 0 0 30px var(--color-verde);
+    animation: brillo 2s infinite;
+  }
+  
+  @keyframes brillo {
+    0%, 100% { text-shadow: 0 0 30px var(--color-verde); }
+    50% { text-shadow: 0 0 50px var(--color-verde), 0 0 70px var(--color-verde); }
+  }
+  
+  .campeon-estadisticas { margin: 2vh 0; font-size: clamp(0.85rem, 2vw, 1.1rem); color: var(--text-primary); }
+  .campeon-estadisticas div { margin: 0.8vh 0; }
+  
+  /* ============ MODAL EMPATE ============ */
+  .modal-empate-contenido { text-align: center; }
+  
+  .modal-empate-titulo {
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    color: var(--color-amarillo);
+    margin-bottom: 2vh;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .modal-empate-info {
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    color: var(--text-primary);
+    margin-bottom: 2vh;
+    line-height: 1.5;
+  }
+  
+  .modal-empate-marcador {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2vw;
+    margin: 2vh 0;
+    padding: 2vh;
+    background: rgba(255, 204, 0, 0.1);
+    border: 2px solid var(--color-amarillo);
+    border-radius: 1vh;
+  }
+  
+  .modal-empate-equipo { text-align: center; flex: 1; }
+  .modal-empate-equipo .nombre { font-size: clamp(0.8rem, 1.8vw, 1rem); color: var(--text-primary); margin-bottom: 0.5vh; }
+  .modal-empate-equipo .goles { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 900; color: var(--color-amarillo); }
+  .modal-empate-vs { font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-muted); font-weight: 700; }
+  
+  .modal-empate-config {
+    margin: 2vh 0;
+    padding: 1.5vh;
+    background: var(--bg-tertiary);
+    border-radius: 0.8vh;
+  }
+  
+  .modal-empate-config label {
+    display: block;
+    font-size: clamp(0.8rem, 1.8vw, 1rem);
+    color: var(--color-amarillo);
+    margin-bottom: 1vh;
+  }
+  
+  .modal-empate-config input {
+    width: 100%;
+    padding: 1vh;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    text-align: center;
+    background: transparent;
+    color: var(--color-amarillo);
+    border: 2px solid var(--color-amarillo);
+    border-radius: 0.5vh;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+  }
+  
+  .modal-empate-botones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1vw;
+    margin-top: 2vh;
+  }
+  
+  /* ============ MODAL GENERAL ============ */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--overlay-bg);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh 2vw;
+  }
+  
+  .modal-overlay.activo { display: flex; }
+  
+  .modal {
+    background: var(--bg-primary);
+    border: 2px solid var(--text-primary);
+    padding: 3vh 3vw;
+    max-width: 90vw;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal h2 {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 2vh;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+  }
+  
+  .modal-opciones { display: flex; flex-direction: column; gap: 1.5vh; margin: 2vh 0; }
+  
+  .modal-opcion {
+    padding: 1.5vh 1vw;
+    background: transparent;
+    border: 2px solid var(--text-primary);
+    border-radius: 0.5vh;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(0.8rem, 1.8vw, 1rem);
+    text-align: center;
+  }
+  
+  .modal-opcion:active { background: rgba(128, 128, 128, 0.2); }
+  
+  /* ============ RESPONSIVE ============ */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .header { height: 7vh; min-height: 45px; padding: 0.5vh 1.5vw; }
+    .btn-icono { width: 5vh; height: 5vh; min-width: 32px; min-height: 32px; }
+    .hora-actual { font-size: clamp(0.7rem, 1.5vw, 1rem); }
+    .titulo-header { font-size: clamp(0.7rem, 1.5vw, 1rem); }
+    
+    .tiempo-display { font-size: clamp(4rem, 20vh, 8rem); }
+    .equipo-marcador .goles { font-size: clamp(2rem, 8vh, 4rem); }
+    
+    .historial-goles { max-height: 8vh; }
+    .btn { min-height: 4vh; font-size: clamp(0.65rem, 1.3vw, 0.9rem); padding: 0.5vh 0.5vw; }
+    .btn-mega { min-height: 6vh; }
+    .btn-gol { min-height: 4vh; font-size: clamp(0.8rem, 1.5vw, 1.1rem); }
+    .btn-quitar-gol { min-height: 3vh; font-size: clamp(0.6rem, 1.1vw, 0.75rem); }
+  }
+  
+  @media (max-width: 480px) and (orientation: portrait) {
+    .tiempo-display { font-size: clamp(4rem, 18vw, 8rem); }
+    .equipo-marcador .goles { font-size: clamp(2rem, 8vw, 4rem); }
+    .bracket-columna { min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MODAL DE OPCIONES -->
+<div id="modal-opciones" class="modal-overlay">
+  <div class="modal">
+    <h2>⚙️ OPCIONES</h2>
+    <div class="modal-opciones">
+      <div class="modal-opcion" onclick="verHistorial()">📋 Ver Historial</div>
+      <div class="modal-opcion" onclick="reiniciarTorneo()">🔄 Reiniciar Torneo</div>
+      <div class="modal-opcion" onclick="cerrarModal()">✕ Cerrar</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE EMPATE -->
+<div id="modal-empate" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-empate-contenido">
+      <div class="modal-empate-titulo">⚠️ EMPATE - TIEMPO ADICIONAL OBLIGATORIO</div>
+      <div class="modal-empate-info">
+        El partido terminó en empate.<br>
+        Se debe jugar tiempo adicional para definir al ganador.
+      </div>
+      
+      <div class="modal-empate-marcador">
+        <div class="modal-empate-equipo">
+          <div class="nombre" id="empate-eq1-nombre">Equipo 1</div>
+          <div class="goles" id="empate-eq1-goles">0</div>
+        </div>
+        <div class="modal-empate-vs">VS</div>
+        <div class="modal-empate-equipo">
+          <div class="nombre" id="empate-eq2-nombre">Equipo 2</div>
+          <div class="goles" id="empate-eq2-goles">0</div>
+        </div>
+      </div>
+      
+      <div class="modal-empate-config">
+        <label>Duración del tiempo adicional (minutos):</label>
+        <input type="number" id="empate-tiempo" value="5" min="1" max="30">
+      </div>
+      
+      <div class="modal-empate-botones">
+        <button class="btn btn-warning" onclick="usarTiempoDefault()">⏱️ 5 MIN (DEFAULT)</button>
+        <button class="btn btn-primary" onclick="iniciarTiempoAdicional()">▶ INICIAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANTALLA 1: CONFIGURACIÓN -->
+<div id="pantalla-config" class="pantalla activa">
+  <div class="config-contenido">
+    <h1>🏆 Torneo Rey de la Cancha</h1>
+    <div class="config-form">
+      <label>Duración del partido (minutos):</label>
+      <input type="number" id="cfg-tiempo" value="8" min="1" max="60">
+      <label>Tiempo de espera entre partidos (minutos):</label>
+      <input type="number" id="cfg-espera" value="5" min="1" max="30">
+      <button class="btn btn-primary btn-full btn-mega" onclick="iniciarTorneo()">▶ SIGUIENTE</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANTALLA 2: GESTIÓN DE EQUIPOS -->
+<div id="pantalla-equipos" class="pantalla">
+  <div class="header">
+    <div class="hora-actual" id="hora-equipos">00:00:00</div>
+    <div class="titulo-header">Equipos</div>
+    <div class="header-botones">
+      <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-equipos"></button>
+      <button class="btn-icono" onclick="volverConfig()" title="Volver">⬅</button>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div id="seccion-agregar-equipos">
+      <div class="seccion-titulo">📝 Agregar Equipos</div>
+      <div class="agregar-equipo-form">
+        <input type="text" id="nombre-nuevo-equipo" placeholder="Nombre del equipo">
+        <button class="btn btn-primary" onclick="agregarEquipo()" style="min-width: 60px;">+</button>
+      </div>
+    </div>
+    
+    <div class="seccion-titulo">📋 Lista de Equipos (<span id="total-equipos">0</span>)</div>
+    <div class="lista-equipos" id="lista-equipos"></div>
+    <div id="seccion-orden" style="display: none;">
+      <div class="seccion-titulo">🎲 Orden de Juego</div>
+      <div class="orden-opciones">
+        <button class="btn btn-info" onclick="ordenCreacion()">📋 ORDEN CREACIÓN</button>
+        <button class="btn btn-warning" onclick="ordenAleatorio()">🎲 ALEATORIO</button>
+      </div>
+      <button class="btn btn-primary btn-full btn-mega" onclick="generarFixture()">
+        🏆 GENERAR FIXTURE
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PANTALLA 3: FIXTURE/BRACKET -->
+<div id="pantalla-fixture" class="pantalla">
+  <div class="header">
+    <div class="hora-actual" id="hora-fixture">00:00:00</div>
+    <div class="titulo-header">🏆 Fixture del Torneo</div>
+    <div class="header-botones">
+      <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-fixture">🌙</button>
+      <button class="btn-icono" onclick="volverAGestionEquipos()" title="Gestión de equipos">👥</button>
+      <button class="btn-icono" onclick="abrirModalOpciones()" title="Opciones">⚙</button>
+    </div>
+  </div>
+  
+  <div class="fixture-contenido" id="fixture-contenido-captura">
+    <div class="fixture-header-info">
+      <h2> Bracket del Torneo</h2>
+      <div class="subtitulo">
+        <span id="fixture-total-equipos">0</span> equipos • 
+        <span id="fixture-total-partidos">0</span> partidos • 
+        Duración: <span id="fixture-duracion">8</span> min
+      </div>
+    </div>
+    
+    <div class="bracket-wrapper" id="bracket-wrapper"></div>
+    
+    <div class="fixture-leyenda">
+      <div class="leyenda-item"><div class="leyenda-color pendiente"></div><span>Pendiente</span></div>
+      <div class="leyenda-item"><div class="leyenda-color curso"></div><span>En Curso</span></div>
+      <div class="leyenda-item"><div class="leyenda-color terminado"></div><span>Terminado</span></div>
+      <div class="leyenda-item"><div class="leyenda-color esquivo"></div><span>Esquivo</span></div>
+      <div class="leyenda-item"><div class="leyenda-color campeon"></div><span>Campeón</span></div>
+    </div>
+  </div>
+  
+  <div class="fixture-acciones" id="fixture-acciones">
+    <button class="btn btn-primary btn-mega" onclick="iniciarDesdeFixture()" id="btn-iniciar-fixture">
+      ▶ INICIAR PARTIDO 1
+    </button>
+    <button class="btn btn-info btn-mega" onclick="compartirFixture()" id="btn-compartir-fixture" style="display:none;">
+       COMPARTIR
+    </button>
+  </div>
+</div>
+
+<!-- PANTALLA 4: PARTIDO EN CURSO -->
+<div id="pantalla-partido" class="pantalla">
+  <div class="header">
+    <div class="hora-actual" id="hora-partido">00:00:00</div>
+    <div class="titulo-header">Partido <span id="numero-partido">1</span><span id="indicador-adicional" style="color:var(--color-amarillo); margin-left:0.5vw;"></span></div>
+    <div class="header-botones">
+      <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-partido">🌙</button>
+      <button class="btn-icono" onclick="volverAGestionEquipos()" title="Gestión de equipos">👥</button>
+      <button class="btn-icono" onclick="verFixture()" title="Ver fixture"></button>
+      <button class="btn-icono" onclick="abrirModalOpciones()" title="Opciones">⚙</button>
+    </div>
+  </div>
+  <div class="marcador-contenido">
+    <div class="equipos-enfrentamiento">
+      <div class="equipo-marcador">
+        <div class="nombre" id="nombre-equipo1">Equipo 1</div>
+        <div class="goles" id="goles-equipo1">0</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="equipo-marcador">
+        <div class="nombre" id="nombre-equipo2">Equipo 2</div>
+        <div class="goles" id="goles-equipo2">0</div>
+      </div>
+    </div>
+    <div id="aviso-empate" class="empate-aviso" style="display:none;">⚠️ TIEMPO ADICIONAL - EMPATE</div>
+    <div class="contador-tiempo">
+      <div class="tiempo-display" id="tiempo-partido">00:00</div>
+    </div>
+    <div class="controles-goles">
+      <div class="btn-gol-container">
+        <button class="btn-gol btn-gol-equipo1" onclick="agregarGol(1)"> GOL</button>
+        <button class="btn-quitar-gol" onclick="quitarGol(1)">-1 (corregir)</button>
+      </div>
+      <div class="btn-gol-container">
+        <button class="btn-gol btn-gol-equipo2" onclick="agregarGol(2)">⚽ GOL</button>
+        <button class="btn-quitar-gol" onclick="quitarGol(2)">-1 (corregir)</button>
+      </div>
+    </div>
+    <div class="historial-goles" id="historial-goles" style="display: none;">
+      <div class="historial-goles-titulo">⚽ Goles del Partido</div>
+      <div id="lista-goles"></div>
+    </div>
+    <div class="controles-partido">
+      <button class="btn" id="btn-pausa" onclick="togglePausa()">⏸</button>
+      <button class="btn btn-warning" onclick="agregarTiempoExtra()">+1 MIN</button>
+      <button class="btn btn-danger" onclick="intentarFinalizarPartido()">⏹ FIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANTALLA 5: ESPERA -->
+<div id="pantalla-espera" class="pantalla">
+  <div class="header">
+    <div class="hora-actual" id="hora-espera">00:00:00</div>
+    <div class="titulo-header">Entre Partidos</div>
+    <div class="header-botones">
+      <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-espera"></button>
+      <button class="btn-icono" onclick="volverAGestionEquipos()" title="Gestión de equipos">👥</button>
+      <button class="btn-icono" onclick="verFixture()" title="Ver fixture">🏆</button>
+    </div>
+  </div>
+  <div class="espera-contenido">
+    <div class="espera-titulo"> Próximo Partido</div>
+    <div class="espera-tiempo" id="tiempo-espera">00:00</div>
+    <div class="espera-info">
+      <div class="linea">👑 Se queda: <span class="destacado-verde" id="equipo-ganador">-</span></div>
+      <div class="linea">🆕 Entra: <span class="destacado-amarillo" id="equipo-entra">-</span></div>
+    </div>
+    <div class="controles-partido" style="max-width: 400px;">
+      <button class="btn" id="btn-pausa-espera" onclick="pausarEspera()">⏸</button>
+      <button class="btn btn-primary" onclick="continuarEspera()">▶</button>
+      <button class="btn btn-warning" onclick="saltarEspera()">⏭</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANTALLA 6: HISTORIAL -->
+<div id="pantalla-historial" class="pantalla">
+  <div class="header">
+    <div class="hora-actual" id="hora-historial">00:00:00</div>
+    <div class="titulo-header"> Historial</div>
+    <div class="header-botones">
+      <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-historial">🌙</button>
+      <button class="btn-icono" onclick="volverAlJuego()">⬅</button>
+    </div>
+  </div>
+  <div class="scroll-content" id="lista-historial"></div>
+  <div class="fixture-acciones" id="historial-acciones" style="display:none;">
+    <button class="btn btn-info btn-mega" onclick="compartirHistorial()">
+      📤 COMPARTIR HISTORIAL
+    </button>
+  </div>
+</div>
+
+<!-- PANTALLA 7: CAMPEÓN -->
+<div id="pantalla-campeon" class="pantalla">
+  <div class="header">
+    <div class="hora-actual" id="hora-campeon">00:00:00</div>
+    <div class="titulo-header"> TORNEO FINALIZADO</div>
+  </div>
+  <div class="campeon-contenido">
+    <div class="campeon-titulo">👑 CAMPEÓN DEL TORNEO 👑</div>
+    <div class="campeon-nombre" id="nombre-campeon">-</div>
+    <div class="campeon-estadisticas">
+      <div>Partidos ganados: <span id="stats-ganados" style="color: var(--color-verde);">0</span></div>
+      <div>Goles a favor: <span id="stats-goles" style="color: var(--color-amarillo);">0</span></div>
+      <div>Partidos jugados: <span id="stats-partidos" style="color: var(--color-azul);">0</span></div>
+    </div>
+    <button class="btn btn-primary btn-full btn-mega" onclick="reiniciarTorneo()" style="margin-top: 3vh; max-width: 400px;">🔄 NUEVO TORNEO</button>
+    <button class="btn btn-full" onclick="verFixture()" style="margin-top: 1.5vh; max-width: 400px;">🏆 Ver Fixture Completo</button>
+  </div>
+</div>
+
+<script>
+// ============ VARIABLES GLOBALES ============
+let configTiempo = 8;
+let configEspera = 5;
+
+let equipos = [];
+let colaEquipos = [];
+let historialPartidos = [];
+let esquivos = [];
+
+let partidoActual = 1;
+let equipo1 = null;
+let equipo2 = null;
+let golesEquipo1 = 0;
+let golesEquipo2 = 0;
+let golesRegistro = [];
+
+let tiempoActual = 0;
+let pausaActiva = false;
+let intervaloPrincipal = null;
+let fechaInicioPartido = null;
+let esTiempoAdicional = false;
+let tiempoAdicionalConfig = 5;
+
+let tiempoEspera = 0;
+let intervaloEspera = null;
+let pausaEsperaActiva = false;
+
+let audioContext = null;
+let sonidoActivado = false;
+let intervaloHora = null;
+
+let torneoFinalizado = false;
+let equipoCampeon = null;
+let torneoIniciado = false;
+
+let temaActual = localStorage.getItem('tema') || 'dark';
+
+// ============ TEMA ============
+function aplicarTema() {
+  document.documentElement.setAttribute('data-theme', temaActual);
+  const icono = temaActual === 'dark' ? '🌙' : '☀️';
+  document.querySelectorAll('[id^="btn-tema"]').forEach(btn => {
+    if (btn) btn.textContent = icono;
+  });
+}
+
+function toggleTema() {
+  temaActual = temaActual === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('tema', temaActual);
+  aplicarTema();
+}
+
+// ============ HORA ACTUAL ============
+function actualizarHoraActual() {
+  const ahora = new Date();
+  const hora = ahora.toLocaleTimeString('es-ES', { hour12: false });
+  const elementos = [
+    'hora-equipos', 'hora-fixture', 'hora-partido', 
+    'hora-espera', 'hora-historial', 'hora-campeon'
+  ];
+  elementos.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = hora;
+  });
+}
+
+function iniciarRelojHora() {
+  actualizarHoraActual();
+  if (intervaloHora) clearInterval(intervaloHora);
+  intervaloHora = setInterval(actualizarHoraActual, 1000);
+}
+
+// ============ AUDIO ============
+function inicializarAudio() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+  sonidoActivado = true;
+}
+
+function reproducirPitido(duracion = 0.3, frecuencia = 800) {
+  if (!audioContext || !sonidoActivado) return;
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  oscillator.frequency.value = frecuencia;
+  oscillator.type = 'square';
+  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duracion);
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + duracion);
+}
+
+function reproducirGol() {
+  if (!audioContext || !sonidoActivado) return;
+  setTimeout(() => reproducirPitido(0.1, 600), 0);
+  setTimeout(() => reproducirPitido(0.1, 800), 100);
+  setTimeout(() => reproducirPitido(0.2, 1000), 200);
+}
+
+function reproducirAviso() {
+  if (!audioContext || !sonidoActivado) return;
+  setTimeout(() => reproducirPitido(0.15, 1000), 0);
+  setTimeout(() => reproducirPitido(0.15, 1000), 200);
+  setTimeout(() => reproducirPitido(0.3, 1200), 400);
+}
+
+function reproducirPitidoFinal() {
+  if (!audioContext || !sonidoActivado) return;
+  reproducirPitido(1.5, 1500);
+  setTimeout(() => reproducirPitido(1.5, 1500), 500);
+}
+
+function reproducirEmpate() {
+  if (!audioContext || !sonidoActivado) return;
+  setTimeout(() => reproducirPitido(0.3, 400), 0);
+  setTimeout(() => reproducirPitido(0.3, 400), 400);
+  setTimeout(() => reproducirPitido(0.5, 500), 800);
+}
+
+// ============ NAVEGACIÓN ============
+function mostrarPantalla(id) {
+  document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+  document.getElementById(id).classList.add('activa');
+}
+
+function abrirModalOpciones() {
+  document.getElementById('modal-opciones').classList.add('activo');
+}
+
+function cerrarModal() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('activo'));
+}
+
+function volverConfig() {
+  if (confirm('¿Volver a configuración? Se perderán los datos.')) {
+    location.reload();
+  }
+}
+
+function volverAGestionEquipos() {
+  if (torneoIniciado) {
+    if (equipo1 && equipo2 && tiempoActual > 0 && !torneoFinalizado) {
+      if (confirm('⚠️ Hay un partido en curso.\n\n¿Volver a la gestión de equipos?\nEl partido se pausará pero no se perderá.')) {
+        pausaActiva = true;
+        document.getElementById('btn-pausa').textContent = '▶';
+        mostrarPantalla('pantalla-equipos');
+      }
+    } else {
+      mostrarPantalla('pantalla-equipos');
+    }
+  } else {
+    mostrarPantalla('pantalla-equipos');
+  }
+}
+
+function volverAlJuego() {
+  if (torneoFinalizado) {
+    mostrarPantalla('pantalla-campeon');
+  } else if (equipo1 && equipo2 && tiempoActual > 0) {
+    mostrarPantalla('pantalla-partido');
+  } else if (tiempoEspera > 0) {
+    mostrarPantalla('pantalla-espera');
+  } else {
+    mostrarPantalla('pantalla-equipos');
+  }
+}
+
+// ============ COMPARTIR CAPTURAS ============
+async function compartirFixture() {
+  const elemento = document.getElementById('fixture-contenido-captura');
+  
+  try {
+    const canvas = await html2canvas(elemento, {
+      backgroundColor: temaActual === 'dark' ? '#0a0a0a' : '#fff',
+      scale: 2,
+      useCORS: true
+    });
+    
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    const file = new File([blob], 'fixture-torneo.png', { type: 'image/png' });
+    
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'Fixture del Torneo',
+        text: ' Resultado del Torneo Rey de la Cancha'
+      });
+    } else {
+      // Fallback: descargar imagen
+      const link = document.createElement('a');
+      link.download = 'fixture-torneo.png';
+      link.href = canvas.toDataURL();
+      link.click();
+      alert('📸 Imagen descargada. Ahora puedes compartirla.');
+    }
+  } catch (error) {
+    console.error('Error al compartir:', error);
+    alert(' Error al generar la captura');
+  }
+}
+
+async function compartirHistorial() {
+  const elemento = document.getElementById('lista-historial');
+  
+  try {
+    const canvas = await html2canvas(elemento, {
+      backgroundColor: temaActual === 'dark' ? '#000' : '#f5f5f5',
+      scale: 2,
+      useCORS: true
+    });
+    
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    const file = new File([blob], 'historial-torneo.png', { type: 'image/png' });
+    
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'Historial del Torneo',
+        text: '📋 Historial completo del Torneo Rey de la Cancha'
+      });
+    } else {
+      const link = document.createElement('a');
+      link.download = 'historial-torneo.png';
+      link.href = canvas.toDataURL();
+      link.click();
+      alert('📸 Imagen descargada. Ahora puedes compartirla.');
+    }
+  } catch (error) {
+    console.error('Error al compartir:', error);
+    alert('❌ Error al generar la captura');
+  }
+}
+
+// ============ FIXTURE / BRACKET ============
+function generarFixture() {
+  if (equipos.length < 2) {
+    alert('Necesitas al menos 2 equipos');
+    return;
+  }
+  
+  equipo1 = equipos[0];
+  equipo2 = equipos[1];
+  colaEquipos = equipos.slice(2);
+  partidoActual = 1;
+  torneoFinalizado = false;
+  equipoCampeon = null;
+  torneoIniciado = true;
+  
+  actualizarSeccionEquipos();
+  renderizarBracket();
+  mostrarPantalla('pantalla-fixture');
+}
+
+function formatearHora(fecha) {
+  if (!fecha) return '--:--';
+  return fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+function renderizarBracket() {
+  const wrapper = document.getElementById('bracket-wrapper');
+  wrapper.innerHTML = '';
+  
+  document.getElementById('fixture-total-equipos').textContent = equipos.length + esquivos.length;
+  document.getElementById('fixture-duracion').textContent = configTiempo;
+  
+  const partidosJugados = historialPartidos.length;
+  const partidosPendientes = colaEquipos.length + esquivos.length;
+  const hayPartidoEnCurso = (equipo1 && equipo2 && !torneoFinalizado);
+  const totalCalculado = partidosJugados + partidosPendientes + (hayPartidoEnCurso ? 1 : 0);
+  document.getElementById('fixture-total-partidos').textContent = totalCalculado || (equipos.length - 1 + esquivos.length);
+  
+  let ultimoGanadorConocido = null;
+  if (historialPartidos.length > 0) {
+    const ultimo = historialPartidos[historialPartidos.length - 1];
+    ultimoGanadorConocido = { nombre: ultimo.ganador };
+  }
+  
+  if (historialPartidos.length > 0) {
+    const colJugados = document.createElement('div');
+    colJugados.className = 'bracket-columna';
+    colJugados.innerHTML = `<div class="bracket-columna-titulo">Jugados (${historialPartidos.length})</div>`;
+    const partidosDiv = document.createElement('div');
+    partidosDiv.className = 'bracket-partidos';
+    
+    historialPartidos.forEach(p => {
+      const eq1Gana = p.goles1 > p.goles2;
+      const eq2Gana = p.goles2 > p.goles1;
+      const div = document.createElement('div');
+      div.className = 'bracket-partido terminado';
+      
+      let horaHtml = '';
+      if (p.fechaInicio || p.fechaFin) {
+        horaHtml = `<div class="bracket-partido-hora">${formatearHora(p.fechaInicio)} - ${formatearHora(p.fechaFin)}</div>`;
+      }
+      
+      div.innerHTML = `
+        <div class="bracket-partido-numero">P${p.numero}</div>
+        ${horaHtml}
+        <div class="bracket-equipo ${eq1Gana ? 'ganador' : ''}">
+          <span class="bracket-equipo-nombre">${p.equipo1}</span>
+          <span class="bracket-equipo-goles">${p.goles1}</span>
+        </div>
+        <div class="bracket-equipo ${eq2Gana ? 'ganador' : ''}">
+          <span class="bracket-equipo-nombre">${p.equipo2}</span>
+          <span class="bracket-equipo-goles">${p.goles2}</span>
+        </div>
+      `;
+      partidosDiv.appendChild(div);
+    });
+    
+    colJugados.appendChild(partidosDiv);
+    wrapper.appendChild(colJugados);
+    
+    if (equipo1 && equipo2 && !torneoFinalizado) {
+      const conector = document.createElement('div');
+      conector.className = 'bracket-conector';
+      conector.innerHTML = '→';
+      wrapper.appendChild(conector);
+    } else if (torneoFinalizado && equipoCampeon) {
+      const conector = document.createElement('div');
+      conector.className = 'bracket-conector';
+      conector.innerHTML = '→';
+      wrapper.appendChild(conector);
+    }
+  }
+  
+  if (equipo1 && equipo2 && !torneoFinalizado) {
+    const colCurso = document.createElement('div');
+    colCurso.className = 'bracket-columna';
+    colCurso.innerHTML = `<div class="bracket-columna-titulo">En Curso</div>`;
+    const partidosDiv = document.createElement('div');
+    partidosDiv.className = 'bracket-partidos';
+    
+    const div = document.createElement('div');
+    div.className = 'bracket-partido en-curso';
+    
+    let horaHtml = '';
+    if (fechaInicioPartido) {
+      horaHtml = `<div class="bracket-partido-hora">Inicio: ${formatearHora(fechaInicioPartido)}</div>`;
+    }
+    
+    let indicadorAdicional = '';
+    if (esTiempoAdicional) {
+      indicadorAdicional = `<div class="bracket-partido-hora" style="color:var(--color-amarillo);">⚡ TIEMPO ADICIONAL</div>`;
+    }
+    
+    div.innerHTML = `
+      <div class="bracket-partido-numero">Partido ${partidoActual}</div>
+      ${horaHtml}
+      ${indicadorAdicional}
+      <div class="bracket-equipo">
+        <span class="bracket-equipo-nombre">${equipo1.nombre}</span>
+        <span class="bracket-equipo-goles">${golesEquipo1}</span>
+      </div>
+      <div class="bracket-equipo">
+        <span class="bracket-equipo-nombre">${equipo2.nombre}</span>
+        <span class="bracket-equipo-goles">${golesEquipo2}</span>
+      </div>
+    `;
+    partidosDiv.appendChild(div);
+    colCurso.appendChild(partidosDiv);
+    wrapper.appendChild(colCurso);
+    
+    const conector = document.createElement('div');
+    conector.className = 'bracket-conector';
+    conector.innerHTML = '→';
+    wrapper.appendChild(conector);
+  }
+  
+  if (colaEquipos.length > 0) {
+    const colPendientes = document.createElement('div');
+    colPendientes.className = 'bracket-columna';
+    colPendientes.innerHTML = `<div class="bracket-columna-titulo">Pendientes (${colaEquipos.length})</div>`;
+    const partidosDiv = document.createElement('div');
+    partidosDiv.className = 'bracket-partidos';
+    
+    let nombreEquipoAvanza = 'Por definir';
+    let esPorDefinir = true;
+    
+    if (ultimoGanadorConocido && !hayPartidoEnCurso) {
+      nombreEquipoAvanza = ultimoGanadorConocido.nombre;
+      esPorDefinir = false;
+    }
+    
+    colaEquipos.forEach((equipo, index) => {
+      const numPartido = partidoActual + index + (equipo1 && equipo2 && !torneoFinalizado ? 1 : 0);
+      const div = document.createElement('div');
+      div.className = 'bracket-partido pendiente';
+      div.innerHTML = `
+        <div class="bracket-partido-numero">Partido ${numPartido}</div>
+        <div class="bracket-equipo ${esPorDefinir ? 'por-definir' : ''}">
+          <span class="bracket-equipo-nombre">${nombreEquipoAvanza}</span>
+          <span class="bracket-equipo-goles">-</span>
+        </div>
+        <div class="bracket-equipo">
+          <span class="bracket-equipo-nombre">${equipo.nombre}</span>
+          <span class="bracket-equipo-goles">-</span>
+        </div>
+      `;
+      partidosDiv.appendChild(div);
+      nombreEquipoAvanza = 'Por definir';
+      esPorDefinir = true;
+    });
+    
+    colPendientes.appendChild(partidosDiv);
+    wrapper.appendChild(colPendientes);
+    
+    if (esquivos.length > 0) {
+      const conector = document.createElement('div');
+      conector.className = 'bracket-conector';
+      conector.innerHTML = '→';
+      wrapper.appendChild(conector);
+    } else {
+      const conector = document.createElement('div');
+      conector.className = 'bracket-conector';
+      conector.innerHTML = '→';
+      wrapper.appendChild(conector);
+    }
+  }
+  
+  if (esquivos.length > 0) {
+    const colEsquivos = document.createElement('div');
+    colEsquivos.className = 'bracket-columna';
+    colEsquivos.innerHTML = `<div class="bracket-columna-titulo">Esquivos (${esquivos.length})</div>`;
+    const partidosDiv = document.createElement('div');
+    partidosDiv.className = 'bracket-partidos';
+    
+    esquivos.forEach((equipo, index) => {
+      const numPartido = partidoActual + colaEquipos.length + index + (equipo1 && equipo2 && !torneoFinalizado ? 1 : 0);
+      const div = document.createElement('div');
+      div.className = 'bracket-partido esquivo';
+      div.innerHTML = `
+        <div class="bracket-partido-numero">P${numPartido} (Esquivo)</div>
+        <div class="bracket-equipo por-definir">
+          <span class="bracket-equipo-nombre">Ganador anterior</span>
+          <span class="bracket-equipo-goles">-</span>
+        </div>
+        <div class="bracket-equipo">
+          <span class="bracket-equipo-nombre">${equipo.nombre}</span>
+          <span class="bracket-equipo-goles">-</span>
+        </div>
+      `;
+      partidosDiv.appendChild(div);
+    });
+    
+    colEsquivos.appendChild(partidosDiv);
+    wrapper.appendChild(colEsquivos);
+    
+    const conector = document.createElement('div');
+    conector.className = 'bracket-conector';
+    conector.innerHTML = '→';
+    wrapper.appendChild(conector);
+  }
+  
+  const colCampeon = document.createElement('div');
+  colCampeon.className = 'bracket-campeon';
+  
+  let campeonNombre = 'Por definir';
+  let campeonClase = 'vacio';
+  
+  if (torneoFinalizado && equipoCampeon) {
+    campeonNombre = equipoCampeon.nombre;
+    campeonClase = '';
+  }
+  
+  colCampeon.innerHTML = `
+    <div class="bracket-campeon-trofeo">🏆</div>
+    <div class="bracket-campeon-label">Campeón</div>
+    <div class="bracket-campeon-nombre ${campeonClase}">${campeonNombre}</div>
+  `;
+  wrapper.appendChild(colCampeon);
+  
+  const btnIniciar = document.getElementById('btn-iniciar-fixture');
+  const accionesDiv = document.getElementById('fixture-acciones');
+  const btnCompartir = document.getElementById('btn-compartir-fixture');
+  
+  if (torneoFinalizado && equipoCampeon) {
+    btnIniciar.textContent = `👑 CAMPEÓN: ${equipoCampeon.nombre}`;
+    btnIniciar.onclick = () => mostrarCampeon(equipoCampeon);
+    accionesDiv.style.display = 'flex';
+    btnCompartir.style.display = 'flex';
+  } else if (equipo1 && equipo2 && tiempoActual === 0 && historialPartidos.length === 0) {
+    btnIniciar.textContent = `▶ INICIAR PARTIDO 1: ${equipo1.nombre} VS ${equipo2.nombre}`;
+    btnIniciar.onclick = iniciarDesdeFixture;
+    accionesDiv.style.display = 'flex';
+    btnCompartir.style.display = 'none';
+  } else if (equipo1 && equipo2 && tiempoActual > 0 && !torneoFinalizado) {
+    btnIniciar.textContent = '→ VOLVER AL PARTIDO EN CURSO';
+    btnIniciar.onclick = () => mostrarPantalla('pantalla-partido');
+    accionesDiv.style.display = 'flex';
+    btnCompartir.style.display = 'none';
+  } else {
+    accionesDiv.style.display = 'none';
+    btnCompartir.style.display = 'none';
+  }
+}
+
+function iniciarDesdeFixture() {
+  if (equipo1 && equipo2 && tiempoActual === 0 && historialPartidos.length === 0) {
+    iniciarPartido();
+  } else if (equipo1 && equipo2 && tiempoActual > 0 && !torneoFinalizado) {
+    mostrarPantalla('pantalla-partido');
+  }
+}
+
+function verFixture() {
+  cerrarModal();
+  renderizarBracket();
+  mostrarPantalla('pantalla-fixture');
+}
+
+// ============ GESTIÓN DE EQUIPOS ============
+function actualizarSeccionEquipos() {
+  const seccionAgregar = document.getElementById('seccion-agregar-equipos');
+  const seccionOrden = document.getElementById('seccion-orden');
+  
+  if (torneoIniciado) {
+    if (seccionAgregar) seccionAgregar.style.display = 'none';
+    if (seccionOrden) seccionOrden.style.display = 'none';
+  } else {
+    if (seccionAgregar) seccionAgregar.style.display = 'block';
+    if (seccionOrden) seccionOrden.style.display = equipos.length >= 2 ? 'block' : 'none';
+  }
+}
+
+function iniciarTorneo() {
+  inicializarAudio();
+  configTiempo = parseInt(document.getElementById('cfg-tiempo').value) || 8;
+  configEspera = parseInt(document.getElementById('cfg-espera').value) || 5;
+  iniciarRelojHora();
+  mostrarPantalla('pantalla-equipos');
+}
+
+function agregarEquipo() {
+  const input = document.getElementById('nombre-nuevo-equipo');
+  const nombre = input.value.trim();
+  if (nombre) {
+    equipos.push({
+      id: Date.now(),
+      nombre: nombre,
+      ganados: 0,
+      goles: 0,
+      partidos: 0
+    });
+    input.value = '';
+    actualizarListaEquipos();
+  }
+}
+
+function eliminarEquipo(id) {
+  equipos = equipos.filter(e => e.id !== id);
+  actualizarListaEquipos();
+}
+
+function actualizarListaEquipos() {
+  const lista = document.getElementById('lista-equipos');
+  const total = document.getElementById('total-equipos');
+  
+  lista.innerHTML = '';
+  total.textContent = equipos.length;
+  
+  equipos.forEach((equipo, index) => {
+    const div = document.createElement('div');
+    div.className = 'equipo-item';
+    div.innerHTML = `
+      <div class="equipo-numero">${index + 1}</div>
+      <div class="equipo-nombre">${equipo.nombre}</div>
+      <button class="equipo-eliminar" onclick="eliminarEquipo(${equipo.id})">×</button>
+    `;
+    lista.appendChild(div);
+  });
+  
+  actualizarSeccionEquipos();
+}
+
+function ordenCreacion() {
+  alert('✓ Equipos en orden de creación: ' + equipos.map(e => e.nombre).join(', '));
+}
+
+function ordenAleatorio() {
+  for (let i = equipos.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [equipos[i], equipos[j]] = [equipos[j], equipos[i]];
+  }
+  actualizarListaEquipos();
+  alert('✓ Equipos mezclados aleatoriamente');
+}
+
+// ============ PARTIDO ============
+function iniciarPartido() {
+  fechaInicioPartido = new Date();
+  
+  document.getElementById('numero-partido').textContent = partidoActual;
+  document.getElementById('nombre-equipo1').textContent = equipo1.nombre;
+  document.getElementById('nombre-equipo2').textContent = equipo2.nombre;
+  document.getElementById('goles-equipo1').textContent = '0';
+  document.getElementById('goles-equipo2').textContent = '0';
+  
+  golesEquipo1 = 0;
+  golesEquipo2 = 0;
+  golesRegistro = [];
+  tiempoActual = 0;
+  pausaActiva = false;
+  esTiempoAdicional = false;
+  
+  document.getElementById('btn-pausa').textContent = '⏸';
+  document.getElementById('tiempo-partido').classList.remove('aviso', 'empate');
+  document.getElementById('historial-goles').style.display = 'none';
+  document.getElementById('lista-goles').innerHTML = '';
+  document.getElementById('aviso-empate').style.display = 'none';
+  document.getElementById('indicador-adicional').textContent = '';
+  
+  mostrarPantalla('pantalla-partido');
+  actualizarDisplayTiempo();
+  iniciarIntervaloPartido();
+}
+
+function iniciarIntervaloPartido() {
+  if (intervaloPrincipal) clearInterval(intervaloPrincipal);
+  intervaloPrincipal = setInterval(() => {
+    if (!pausaActiva) {
+      tiempoActual++;
+      actualizarDisplayTiempo();
+      
+      if (tiempoActual === configTiempo * 60 - 10 && !esTiempoAdicional) {
+        reproducirAviso();
+        document.getElementById('tiempo-partido').classList.add('aviso');
+        setTimeout(() => {
+          document.getElementById('tiempo-partido').classList.remove('aviso');
+        }, 5000);
+      }
+    }
+  }, 1000);
+}
+
+function actualizarDisplayTiempo() {
+  const m = Math.floor(tiempoActual / 60).toString().padStart(2, '0');
+  const s = (tiempoActual % 60).toString().padStart(2, '0');
+  document.getElementById('tiempo-partido').textContent = `${m}:${s}`;
+}
+
+function togglePausa() {
+  pausaActiva = !pausaActiva;
+  document.getElementById('btn-pausa').textContent = pausaActiva ? '▶' : '⏸';
+}
+
+function agregarGol(equipo) {
+  if (equipo === 1) {
+    golesEquipo1++;
+    document.getElementById('goles-equipo1').textContent = golesEquipo1;
+  } else {
+    golesEquipo2++;
+    document.getElementById('goles-equipo2').textContent = golesEquipo2;
+  }
+  
+  const m = Math.floor(tiempoActual / 60).toString().padStart(2, '0');
+  const s = (tiempoActual % 60).toString().padStart(2, '0');
+  const nombreEquipo = equipo === 1 ? equipo1.nombre : equipo2.nombre;
+  
+  golesRegistro.push({ minuto: `${m}:${s}`, equipo: equipo, nombre: nombreEquipo });
+  actualizarHistorialGoles();
+  reproducirGol();
+  
+  if (golesEquipo1 !== golesEquipo2) {
+    document.getElementById('tiempo-partido').classList.remove('empate');
+  }
+}
+
+function quitarGol(equipo) {
+  for (let i = golesRegistro.length - 1; i >= 0; i--) {
+    if (golesRegistro[i].equipo === equipo) {
+      golesRegistro.splice(i, 1);
+      if (equipo === 1) {
+        golesEquipo1 = Math.max(0, golesEquipo1 - 1);
+        document.getElementById('goles-equipo1').textContent = golesEquipo1;
+      } else {
+        golesEquipo2 = Math.max(0, golesEquipo2 - 1);
+        document.getElementById('goles-equipo2').textContent = golesEquipo2;
+      }
+      actualizarHistorialGoles();
+      return;
+    }
+  }
+  alert('No hay goles de este equipo para quitar');
+}
+
+function actualizarHistorialGoles() {
+  const contenedor = document.getElementById('historial-goles');
+  const lista = document.getElementById('lista-goles');
+  
+  if (golesRegistro.length === 0) {
+    contenedor.style.display = 'none';
+    return;
+  }
+  
+  contenedor.style.display = 'block';
+  lista.innerHTML = '';
+  
+  golesRegistro.forEach((gol) => {
+    const div = document.createElement('div');
+    div.className = 'gol-item';
+    div.innerHTML = `
+      <span class="minuto">${gol.minuto}'</span>
+      <span class="equipo-gol eq${gol.equipo}">⚽ ${gol.nombre}</span>
+    `;
+    lista.appendChild(div);
+  });
+}
+
+function agregarTiempoExtra() {
+  configTiempo++;
+  alert(`✓ Tiempo extendido a ${configTiempo} minutos`);
+}
+
+function intentarFinalizarPartido() {
+  if (golesEquipo1 === golesEquipo2) {
+    mostrarModalEmpate();
+  } else {
+    finalizarPartido();
+  }
+}
+
+function mostrarModalEmpate() {
+  reproducirEmpate();
+  
+  document.getElementById('empate-eq1-nombre').textContent = equipo1.nombre;
+  document.getElementById('empate-eq2-nombre').textContent = equipo2.nombre;
+  document.getElementById('empate-eq1-goles').textContent = golesEquipo1;
+  document.getElementById('empate-eq2-goles').textContent = golesEquipo2;
+  document.getElementById('empate-tiempo').value = tiempoAdicionalConfig;
+  
+  document.getElementById('modal-empate').classList.add('activo');
+}
+
+function usarTiempoDefault() {
+  document.getElementById('empate-tiempo').value = 5;
+  tiempoAdicionalConfig = 5;
+  iniciarTiempoAdicional();
+}
+
+function iniciarTiempoAdicional() {
+  const minutos = parseInt(document.getElementById('empate-tiempo').value) || 5;
+  tiempoAdicionalConfig = minutos;
+  
+  cerrarModal();
+  
+  esTiempoAdicional = true;
+  configTiempo = minutos;
+  tiempoActual = 0;
+  pausaActiva = false;
+  
+  document.getElementById('aviso-empate').style.display = 'block';
+  document.getElementById('tiempo-partido').classList.add('empate');
+  document.getElementById('indicador-adicional').textContent = ' ⚡ ADICIONAL';
+  document.getElementById('btn-pausa').textContent = '⏸';
+  
+  iniciarIntervaloPartido();
+  reproducirAviso();
+}
+
+function finalizarPartido() {
+  clearInterval(intervaloPrincipal);
+  reproducirPitidoFinal();
+  
+  const fechaFinPartido = new Date();
+  
+  let ganador, perdedor;
+  if (golesEquipo1 > golesEquipo2) {
+    ganador = equipo1; perdedor = equipo2;
+  } else if (golesEquipo2 > golesEquipo1) {
+    ganador = equipo2; perdedor = equipo1;
+  } else {
+    ganador = Math.random() > 0.5 ? equipo1 : equipo2;
+    perdedor = ganador === equipo1 ? equipo2 : equipo1;
+  }
+  
+  ganador.ganados++;
+  ganador.goles += (ganador === equipo1 ? golesEquipo1 : golesEquipo2);
+  ganador.partidos++;
+  perdedor.partidos++;
+  
+  const esEsquivoActual = esquivos.some(e => e.nombre === equipo2.nombre);
+  
+  historialPartidos.push({
+    numero: partidoActual,
+    equipo1: equipo1.nombre,
+    equipo2: equipo2.nombre,
+    goles1: golesEquipo1,
+    goles2: golesEquipo2,
+    ganador: ganador.nombre,
+    golesRegistro: [...golesRegistro],
+    esEsquivo: esEsquivoActual,
+    fechaInicio: fechaInicioPartido,
+    fechaFin: fechaFinPartido,
+    fueTiempoAdicional: esTiempoAdicional,
+    duracionAdicional: esTiempoAdicional ? tiempoAdicionalConfig : 0
+  });
+  
+  esTiempoAdicional = false;
+  
+  if (colaEquipos.length > 0 || esquivos.length > 0) {
+    prepararSiguientePartido(ganador);
+  } else {
+    torneoFinalizado = true;
+    equipoCampeon = ganador;
+    mostrarCampeon(ganador);
+  }
+}
+
+function prepararSiguientePartido(ganador) {
+  equipo1 = ganador;
+  
+  if (esquivos.length > 0) {
+    equipo2 = esquivos.shift();
+  } else if (colaEquipos.length > 0) {
+    equipo2 = colaEquipos.shift();
+  }
+  
+  partidoActual++;
+  mostrarPantallaEspera();
+}
+
+// ============ ESPERA ============
+function mostrarPantallaEspera() {
+  document.getElementById('equipo-ganador').textContent = equipo1.nombre;
+  document.getElementById('equipo-entra').textContent = equipo2 ? equipo2.nombre : '-';
+  
+  tiempoEspera = configEspera * 60;
+  pausaEsperaActiva = false;
+  document.getElementById('btn-pausa-espera').textContent = '';
+  actualizarDisplayEspera();
+  
+  mostrarPantalla('pantalla-espera');
+  iniciarIntervaloEspera();
+}
+
+function iniciarIntervaloEspera() {
+  if (intervaloEspera) clearInterval(intervaloEspera);
+  intervaloEspera = setInterval(() => {
+    if (!pausaEsperaActiva) {
+      tiempoEspera--;
+      actualizarDisplayEspera();
+      
+      if (tiempoEspera <= 0) {
+        clearInterval(intervaloEspera);
+        if (equipo2) {
+          iniciarPartido();
+        } else {
+          alert('No hay más equipos disponibles');
+        }
+      }
+    }
+  }, 1000);
+}
+
+function actualizarDisplayEspera() {
+  const m = Math.floor(tiempoEspera / 60).toString().padStart(2, '0');
+  const s = (tiempoEspera % 60).toString().padStart(2, '0');
+  document.getElementById('tiempo-espera').textContent = `${m}:${s}`;
+}
+
+function pausarEspera() {
+  pausaEsperaActiva = !pausaEsperaActiva;
+  document.getElementById('btn-pausa-espera').textContent = pausaEsperaActiva ? '▶' : '⏸';
+}
+
+function continuarEspera() {
+  pausaEsperaActiva = false;
+  document.getElementById('btn-pausa-espera').textContent = '⏸';
+}
+
+function saltarEspera() {
+  clearInterval(intervaloEspera);
+  if (equipo2) {
+    iniciarPartido();
+  } else {
+    alert('No hay más equipos disponibles');
+  }
+}
+
+// ============ HISTORIAL ============
+function verHistorial() {
+  cerrarModal();
+  const lista = document.getElementById('lista-historial');
+  const accionesDiv = document.getElementById('historial-acciones');
+  lista.innerHTML = '';
+  
+  if (historialPartidos.length === 0) {
+    lista.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 4vh;">No hay partidos jugados aún</div>';
+    accionesDiv.style.display = 'none';
+  } else {
+    historialPartidos.forEach(partido => {
+      const div = document.createElement('div');
+      div.className = `partido-historial ${partido.esEsquivo ? 'esquivo' : ''}`;
+      
+      let horarioHtml = '';
+      if (partido.fechaInicio || partido.fechaFin) {
+        horarioHtml = `<div class="horario">🕐 ${formatearHora(partido.fechaInicio)} - ${formatearHora(partido.fechaFin)}</div>`;
+      }
+      
+      let adicionalHtml = '';
+      if (partido.fueTiempoAdicional) {
+        adicionalHtml = `<div class="horario" style="color:var(--color-amarillo);">⚡ Tiempo adicional: ${partido.duracionAdicional} min</div>`;
+      }
+      
+      let golesHtml = '';
+      if (partido.golesRegistro && partido.golesRegistro.length > 0) {
+        golesHtml = '<div style="margin-top: 0.8vh; font-size: 0.8em; color: var(--text-secondary);">';
+        partido.golesRegistro.forEach(gol => {
+          golesHtml += `${gol.minuto}' ⚽ ${gol.nombre} | `;
+        });
+        golesHtml = golesHtml.slice(0, -3) + '</div>';
+      }
+      
+      div.innerHTML = `
+        <div class="info">
+          <span class="numero">Partido ${partido.numero}</span>
+          ${partido.esEsquivo ? '<span class="tipo">Esquivo</span>' : ''}
+          ${horarioHtml}
+          ${adicionalHtml}
+        </div>
+        <div class="resultado">
+          ${partido.equipo1} ${partido.goles1} - ${partido.goles2} ${partido.equipo2}
+        </div>
+        <div class="ganador">✓ Ganador: ${partido.ganador}</div>
+        ${golesHtml}
+      `;
+      lista.appendChild(div);
+    });
+    accionesDiv.style.display = 'flex';
+  }
+  
+  mostrarPantalla('pantalla-historial');
+}
+
+// ============ CAMPEÓN ============
+function mostrarCampeon(campeon) {
+  document.getElementById('nombre-campeon').textContent = campeon.nombre;
+  document.getElementById('stats-ganados').textContent = campeon.ganados;
+  document.getElementById('stats-goles').textContent = campeon.goles;
+  document.getElementById('stats-partidos').textContent = campeon.partidos;
+  mostrarPantalla('pantalla-campeon');
+}
+
+function reiniciarTorneo() {
+  if (confirm('¿Reiniciar todo el torneo?')) {
+    location.reload();
+  }
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', () => {
+  aplicarTema();
+  iniciarRelojHora();
+});
+</script>
+
+</body>
+</html>
