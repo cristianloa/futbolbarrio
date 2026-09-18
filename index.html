@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Torneo Rey de la Cancha</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -17,7 +18,6 @@
     --text-secondary: #888;
     --text-muted: #666;
     --border-color: #333;
-    --border-light: #444;
     --color-amarillo: #ffcc00;
     --color-verde: #00ff00;
     --color-rojo: #ff0000;
@@ -37,7 +37,6 @@
     --text-secondary: #666;
     --text-muted: #999;
     --border-color: #ddd;
-    --border-light: #ccc;
     --color-amarillo: #cc9900;
     --color-verde: #00aa00;
     --color-rojo: #cc0000;
@@ -89,10 +88,10 @@
   }
   
   .hora-actual {
-    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    font-size: clamp(0.9rem, 2vw, 1.3rem);
     color: var(--color-amarillo);
     font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: 0.05em;
     white-space: nowrap;
   }
@@ -110,25 +109,47 @@
     text-overflow: ellipsis;
   }
   
-  .header-botones { display: flex; gap: 1vw; align-items: center; }
+  .header-botones { display: flex; gap: 1.5vw; align-items: center; }
   
   .btn-icono {
-    width: 6vh; height: 6vh;
-    min-width: 38px; min-height: 38px;
-    max-width: 50px; max-height: 50px;
+    width: 8vh; height: 8vh;
+    min-width: 50px; min-height: 50px;
     border: 2px solid var(--text-primary);
     border-radius: 50%;
     background: transparent;
     color: var(--text-primary);
-    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-size: clamp(1.5rem, 3vw, 2rem);
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
-    flex-shrink: 0;
+    font-family: 'Orbitron', sans-serif;
+    position: relative;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.3);
   }
   
+  .btn-icono:hover { background: rgba(128, 128, 128, 0.2); }
   .btn-icono:active { transform: scale(0.9); background: rgba(128, 128, 128, 0.3); }
   
+  .btn-icono.wakelock-activo {
+    border-color: var(--color-verde);
+    color: var(--color-verde);
+  }
+  
+  .btn-icono.wakelock-activo::after {
+    content: '';
+    position: absolute;
+    top: -2px; right: -2px;
+    width: 12px; height: 12px;
+    background: var(--color-verde);
+    border-radius: 50%;
+    animation: pulso 2s infinite;
+  }
+  
+  @keyframes pulso {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+  }
+
   .scroll-content { flex: 1; overflow-y: auto; padding: 2vh 4vw; }
   
   .config-contenido {
@@ -156,7 +177,7 @@
   
   .config-form input {
     padding: 1.5vh 1vw;
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
     text-align: center;
     background: var(--input-bg);
     color: var(--color-verde);
@@ -164,6 +185,7 @@
     border-radius: 0.5vh;
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
+    letter-spacing: -0.02em;
   }
   
   /* ============ BOTONES ============ */
@@ -328,21 +350,9 @@
     animation: pulsoFixture 2s infinite;
   }
   
-  .bracket-partido.terminado {
-    border-color: var(--color-azul);
-    background: rgba(0, 136, 255, 0.1);
-  }
-  
-  .bracket-partido.esquivo {
-    border-color: var(--color-morado);
-    background: rgba(255, 0, 255, 0.05);
-  }
-  
-  .bracket-partido.pendiente {
-    border-color: var(--border-light);
-    opacity: 0.7;
-  }
-  
+  .bracket-partido.terminado { border-color: var(--color-azul); background: rgba(0, 136, 255, 0.1); }
+  .bracket-partido.esquivo { border-color: var(--color-morado); background: rgba(255, 0, 255, 0.05); }
+  .bracket-partido.pendiente { border-color: var(--border-color); opacity: 0.7; }
   .bracket-partido.campeon-partido {
     border-color: var(--color-amarillo);
     background: rgba(255, 204, 0, 0.15);
@@ -383,195 +393,128 @@
     border-left: 3px solid transparent;
   }
   
-  [data-theme="light"] .bracket-equipo {
-    background: rgba(255, 255, 255, 0.6);
-  }
+  [data-theme="light"] .bracket-equipo { background: rgba(255, 255, 255, 0.6); }
   
-  .bracket-equipo.ganador {
-    background: rgba(0, 255, 0, 0.15);
-    border-left-color: var(--color-verde);
-  }
-  
-  .bracket-equipo.por-definir {
-    background: var(--bg-tertiary);
-    border-left-color: var(--text-muted);
-    border-style: dashed;
-  }
+  .bracket-equipo.ganador { background: rgba(0, 255, 0, 0.15); border-left-color: var(--color-verde); }
+  .bracket-equipo.por-definir { background: var(--bg-tertiary); border-left-color: var(--text-muted); border-style: dashed; }
   
   .bracket-equipo-nombre {
-    flex: 1;
-    color: var(--text-primary);
-    font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 0 0.3vw;
+    flex: 1; color: var(--text-primary); font-weight: 500;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 0.3vw;
   }
-  
-  .bracket-equipo.ganador .bracket-equipo-nombre {
-    font-weight: 700;
-    color: var(--color-verde);
-  }
-  
-  .bracket-equipo.por-definir .bracket-equipo-nombre {
-    color: var(--text-secondary);
-    font-style: italic;
-  }
+  .bracket-equipo.ganador .bracket-equipo-nombre { font-weight: 700; color: var(--color-verde); }
+  .bracket-equipo.por-definir .bracket-equipo-nombre { color: var(--text-secondary); font-style: italic; }
   
   .bracket-equipo-goles {
     font-size: clamp(0.85rem, 1.8vw, 1.05rem);
-    font-weight: 900;
-    color: var(--text-primary);
-    min-width: 22px;
-    text-align: right;
+    font-weight: 900; color: var(--text-primary); min-width: 22px; text-align: right;
   }
-  
   .bracket-equipo.ganador .bracket-equipo-goles { color: var(--color-verde); }
   .bracket-equipo.por-definir .bracket-equipo-goles { color: var(--text-muted); }
   
   .bracket-conector {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     width: clamp(25px, 3.5vw, 45px);
-    color: var(--text-muted);
-    font-size: clamp(1rem, 2vw, 1.5rem);
-    font-weight: 900;
-    flex-shrink: 0;
+    color: var(--text-muted); font-size: clamp(1rem, 2vw, 1.5rem); font-weight: 900; flex-shrink: 0;
   }
   
   .bracket-campeon {
     min-width: clamp(110px, 16vw, 170px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2vh 1vw;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2vh 1vw;
   }
   
-  .bracket-campeon-trofeo {
-    font-size: clamp(2.5rem, 7vw, 4.5rem);
-    margin-bottom: 1vh;
-  }
-  
+  .bracket-campeon-trofeo { font-size: clamp(2.5rem, 7vw, 4.5rem); margin-bottom: 1vh; }
   .bracket-campeon-label {
-    font-size: clamp(0.65rem, 1.3vw, 0.85rem);
-    color: var(--color-amarillo);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-bottom: 1vh;
-    text-align: center;
+    font-size: clamp(0.65rem, 1.3vw, 0.85rem); color: var(--color-amarillo);
+    text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1vh; text-align: center;
   }
-  
   .bracket-campeon-nombre {
-    font-size: clamp(0.85rem, 1.8vw, 1.1rem);
-    color: var(--color-verde);
-    font-weight: 900;
-    text-align: center;
-    text-shadow: 0 0 10px var(--color-verde);
-    word-break: break-word;
+    font-size: clamp(0.85rem, 1.8vw, 1.1rem); color: var(--color-verde); font-weight: 900;
+    text-align: center; text-shadow: 0 0 10px var(--color-verde); word-break: break-word;
   }
-  
-  .bracket-campeon-nombre.vacio {
-    color: var(--text-muted);
-    text-shadow: none;
-    font-style: italic;
-  }
+  .bracket-campeon-nombre.vacio { color: var(--text-muted); text-shadow: none; font-style: italic; }
   
   .fixture-acciones {
-    display: flex;
-    justify-content: center;
-    gap: 1vw;
-    padding: 1.5vh 2vw;
-    border-top: 2px solid var(--border-color);
-    background: var(--bg-primary);
-    flex-wrap: wrap;
+    display: flex; justify-content: center; gap: 1vw; padding: 1.5vh 2vw;
+    border-top: 2px solid var(--border-color); background: var(--bg-primary); flex-wrap: wrap;
   }
   
   .fixture-leyenda {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1vw;
-    justify-content: center;
-    padding: 1.5vh;
-    background: var(--bg-tertiary);
-    border-radius: 0.5vh;
-    margin-top: 2vh;
+    display: flex; flex-wrap: wrap; gap: 1vw; justify-content: center;
+    padding: 1.5vh; background: var(--bg-tertiary); border-radius: 0.5vh; margin-top: 2vh;
   }
   
-  .leyenda-item {
-    display: flex; align-items: center; gap: 0.5vw;
-    font-size: clamp(0.65rem, 1.3vw, 0.8rem);
-    color: var(--text-secondary);
-  }
-  
-  .leyenda-color {
-    width: 13px; height: 13px;
-    border-radius: 0.3vh;
-    border: 2px solid;
-  }
-  
-  .leyenda-color.pendiente { border-color: var(--border-light); background: var(--bg-tertiary); }
+  .leyenda-item { display: flex; align-items: center; gap: 0.5vw; font-size: clamp(0.65rem, 1.3vw, 0.8rem); color: var(--text-secondary); }
+  .leyenda-color { width: 13px; height: 13px; border-radius: 0.3vh; border: 2px solid; }
+  .leyenda-color.pendiente { border-color: var(--border-color); background: var(--bg-tertiary); }
   .leyenda-color.curso { border-color: var(--color-verde); background: rgba(0, 255, 0, 0.1); }
   .leyenda-color.terminado { border-color: var(--color-azul); background: rgba(0, 136, 255, 0.1); }
   .leyenda-color.esquivo { border-color: var(--color-morado); background: rgba(255, 0, 255, 0.05); }
   .leyenda-color.campeon { border-color: var(--color-amarillo); background: rgba(255, 204, 0, 0.15); }
   
-  /* ============ MARCADOR ============ */
+  /* ============ MARCADOR (Estilo Gigante) ============ */
   .marcador-contenido {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1vh 2vw;
+    padding: 1vh 1vw;
     overflow-y: auto;
   }
   
   .equipos-enfrentamiento {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 1vh;
-    gap: 2vw;
+    display: flex; justify-content: space-around; align-items: center;
+    width: 100%; margin-bottom: 1vh; gap: 2vw;
   }
   
   .equipo-marcador { flex: 1; text-align: center; padding: 1vh 0.5vw; }
   .equipo-marcador .nombre {
-    font-size: clamp(0.75rem, 1.8vw, 1.1rem);
-    color: var(--text-primary);
-    margin-bottom: 0.5vh;
-    font-weight: 700;
-    text-transform: uppercase;
+    font-size: clamp(0.8rem, 2vw, 1.2rem); color: var(--text-primary);
+    margin-bottom: 0.5vh; font-weight: 700; text-transform: uppercase;
   }
   .equipo-marcador .goles {
-    font-size: clamp(2.5rem, 10vw, 6rem);
-    font-weight: 900;
-    color: var(--color-verde);
-    line-height: 1;
+    font-size: clamp(3rem, 12vw, 7rem); font-weight: 900; color: var(--color-verde); line-height: 1;
   }
   
-  .vs { font-size: clamp(1.2rem, 3vw, 2rem); color: var(--text-muted); font-weight: 700; }
+  .vs { font-size: clamp(1.5rem, 4vw, 2.5rem); color: var(--text-muted); font-weight: 700; }
   
-  .contador-tiempo { width: 100%; text-align: center; margin: 1vh 0; flex: 1; display: flex; align-items: center; justify-content: center; }
+  .contador-tiempo {
+    width: 100%; text-align: center; margin: 1vh 0; flex: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
   
+  /* ESTILO GIGANTE DEL CONTADOR */
   .tiempo-display {
-    font-size: clamp(5rem, 25vw, 12rem);
+    font-family: 'Orbitron', sans-serif;
     font-weight: 900;
-    color: var(--color-verde);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
     line-height: 1;
+    text-align: center;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.05em;
+    width: 100%;
   }
   
-  .tiempo-display.aviso {
-    color: var(--color-rojo);
-    animation: parpadeo 0.5s infinite;
+  .tiempo-base {
+    font-size: clamp(8rem, 40vw, 35rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: var(--color-verde);
+    text-align: center;
   }
   
-  .tiempo-display.empate {
+  .tiempo-extra {
+    font-size: clamp(3rem, 15vw, 12rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
     color: var(--color-amarillo);
-    animation: parpadeoEmpate 1s infinite;
+    margin-left: 0.1em;
   }
+  
+  .tiempo-display.aviso .tiempo-base { color: var(--color-rojo); animation: parpadeo 0.5s infinite; }
+  .tiempo-display.empate .tiempo-base { color: var(--color-amarillo); animation: parpadeoEmpate 1s infinite; }
   
   @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
   @keyframes parpadeoEmpate { 
@@ -594,76 +537,46 @@
   }
   
   .controles-goles {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1vw;
-    width: 100%;
-    max-width: 700px;
-    margin: 1vh 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1vw;
+    width: 100%; max-width: 700px; margin: 1vh 0;
   }
   
   .btn-gol-container { display: flex; flex-direction: column; gap: 0.4vh; }
   
   .btn-gol {
-    padding: 1vh 0.5vw;
-    font-size: clamp(0.9rem, 2vw, 1.3rem);
-    border: 3px solid;
-    border-radius: 0.8vh;
-    background: transparent;
-    cursor: pointer;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
-    transition: all 0.2s;
-    min-height: 5vh;
+    padding: 1vh 0.5vw; font-size: clamp(0.9rem, 2vw, 1.3rem);
+    border: 3px solid; border-radius: 0.8vh; background: transparent;
+    cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: 700;
+    transition: all 0.2s; min-height: 5vh;
   }
-  
   .btn-gol-equipo1 { border-color: var(--color-azul); color: var(--color-azul); }
   .btn-gol-equipo1:active { background: rgba(0, 136, 255, 0.3); }
   .btn-gol-equipo2 { border-color: var(--color-rojo); color: var(--color-rojo); }
   .btn-gol-equipo2:active { background: rgba(255, 0, 0, 0.3); }
   
   .btn-quitar-gol {
-    padding: 0.6vh 0.5vw;
-    font-size: clamp(0.65rem, 1.3vw, 0.85rem);
-    border: 2px solid var(--text-muted);
-    border-radius: 0.5vh;
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 500;
-    min-height: 3.5vh;
+    padding: 0.6vh 0.5vw; font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+    border: 2px solid var(--text-muted); border-radius: 0.5vh; background: transparent;
+    color: var(--text-secondary); cursor: pointer; font-family: 'Orbitron', sans-serif;
+    font-weight: 500; min-height: 3.5vh;
   }
-  
   .btn-quitar-gol:active { background: rgba(128, 128, 128, 0.2); color: var(--text-primary); }
   
   .historial-goles {
-    width: 100%; max-width: 700px;
-    margin: 1vh 0;
-    padding: 1vh;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5vh;
-    max-height: 12vh;
-    overflow-y: auto;
+    width: 100%; max-width: 700px; margin: 1vh 0; padding: 1vh;
+    background: var(--bg-tertiary); border: 1px solid var(--border-color);
+    border-radius: 0.5vh; max-height: 12vh; overflow-y: auto;
   }
   
   .historial-goles-titulo {
-    font-size: clamp(0.65rem, 1.3vw, 0.85rem);
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    margin-bottom: 0.5vh;
-    text-align: center;
+    font-size: clamp(0.65rem, 1.3vw, 0.85rem); color: var(--text-secondary);
+    text-transform: uppercase; margin-bottom: 0.5vh; text-align: center;
   }
   
   .gol-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.4vh 0.5vw;
-    font-size: clamp(0.7rem, 1.4vw, 0.9rem);
-    border-bottom: 1px solid var(--border-color);
+    display: flex; justify-content: space-between; padding: 0.4vh 0.5vw;
+    font-size: clamp(0.7rem, 1.4vw, 0.9rem); border-bottom: 1px solid var(--border-color);
   }
-  
   .gol-item:last-child { border-bottom: none; }
   .gol-item .minuto { color: var(--color-amarillo); font-weight: 700; min-width: 45px; }
   .gol-item .equipo-gol { color: var(--text-primary); flex: 1; }
@@ -671,38 +584,17 @@
   .gol-item .equipo-gol.eq2 { color: var(--color-rojo); }
   
   .controles-partido {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.8vw;
-    width: 100%;
-    max-width: 700px;
-    padding-top: 1vh;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8vw;
+    width: 100%; max-width: 700px; padding-top: 1vh;
   }
   
   /* ============ ESPERA ============ */
   .espera-contenido {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 4vh 4vw;
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; padding: 4vh 4vw;
   }
-  
-  .espera-titulo {
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    color: var(--color-amarillo);
-    margin-bottom: 2vh;
-    text-align: center;
-  }
-  
-  .espera-tiempo {
-    font-size: clamp(4rem, 15vw, 8rem);
-    color: var(--color-azul);
-    margin-bottom: 3vh;
-    font-weight: 900;
-  }
-  
+  .espera-titulo { font-size: clamp(1.2rem, 3vw, 1.8rem); color: var(--color-amarillo); margin-bottom: 2vh; text-align: center; }
+  .espera-tiempo { font-size: clamp(4rem, 15vw, 8rem); color: var(--color-azul); margin-bottom: 3vh; font-weight: 900; }
   .espera-info { text-align: center; margin-bottom: 3vh; font-size: clamp(0.85rem, 2vw, 1.1rem); }
   .espera-info .linea { margin: 1vh 0; color: var(--text-primary); }
   .espera-info .destacado-verde { color: var(--color-verde); font-weight: 700; }
@@ -710,13 +602,9 @@
   
   /* ============ HISTORIAL ============ */
   .partido-historial {
-    padding: 1.5vh 1vw;
-    margin-bottom: 1.5vh;
-    background: var(--bg-tertiary);
-    border-left: 4px solid var(--border-color);
-    border-radius: 0 0.5vh 0.5vh 0;
+    padding: 1.5vh 1vw; margin-bottom: 1.5vh;
+    background: var(--bg-tertiary); border-left: 4px solid var(--border-color); border-radius: 0 0.5vh 0.5vh 0;
   }
-  
   .partido-historial.esquivo { border-left-color: var(--color-morado); }
   .partido-historial .info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5vh; flex-wrap: wrap; gap: 0.5vh; }
   .partido-historial .numero { font-size: clamp(0.75rem, 1.8vw, 0.95rem); color: var(--text-secondary); }
@@ -727,166 +615,82 @@
   
   /* ============ CAMPEÓN ============ */
   .campeon-contenido {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 4vh 4vw;
-    text-align: center;
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; padding: 4vh 4vw; text-align: center;
   }
-  
-  .campeon-titulo {
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    color: var(--color-amarillo);
-    margin-bottom: 2vh;
-    text-transform: uppercase;
-  }
-  
+  .campeon-titulo { font-size: clamp(1.2rem, 3vw, 1.8rem); color: var(--color-amarillo); margin-bottom: 2vh; text-transform: uppercase; }
   .campeon-nombre {
-    font-size: clamp(2rem, 7vw, 4rem);
-    color: var(--color-verde);
-    font-weight: 900;
-    margin-bottom: 2vh;
-    text-shadow: 0 0 30px var(--color-verde);
-    animation: brillo 2s infinite;
+    font-size: clamp(2rem, 7vw, 4rem); color: var(--color-verde); font-weight: 900;
+    margin-bottom: 2vh; text-shadow: 0 0 30px var(--color-verde); animation: brillo 2s infinite;
   }
-  
   @keyframes brillo {
     0%, 100% { text-shadow: 0 0 30px var(--color-verde); }
     50% { text-shadow: 0 0 50px var(--color-verde), 0 0 70px var(--color-verde); }
   }
-  
   .campeon-estadisticas { margin: 2vh 0; font-size: clamp(0.85rem, 2vw, 1.1rem); color: var(--text-primary); }
   .campeon-estadisticas div { margin: 0.8vh 0; }
   
   /* ============ MODAL EMPATE ============ */
   .modal-empate-contenido { text-align: center; }
-  
-  .modal-empate-titulo {
-    font-size: clamp(1.3rem, 3vw, 2rem);
-    color: var(--color-amarillo);
-    margin-bottom: 2vh;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-  
-  .modal-empate-info {
-    font-size: clamp(0.9rem, 2vw, 1.1rem);
-    color: var(--text-primary);
-    margin-bottom: 2vh;
-    line-height: 1.5;
-  }
-  
+  .modal-empate-titulo { font-size: clamp(1.3rem, 3vw, 2rem); color: var(--color-amarillo); margin-bottom: 2vh; text-transform: uppercase; letter-spacing: 0.1em; }
+  .modal-empate-info { font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-primary); margin-bottom: 2vh; line-height: 1.5; }
   .modal-empate-marcador {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2vw;
-    margin: 2vh 0;
-    padding: 2vh;
-    background: rgba(255, 204, 0, 0.1);
-    border: 2px solid var(--color-amarillo);
-    border-radius: 1vh;
+    display: flex; justify-content: center; align-items: center; gap: 2vw;
+    margin: 2vh 0; padding: 2vh; background: rgba(255, 204, 0, 0.1);
+    border: 2px solid var(--color-amarillo); border-radius: 1vh;
   }
-  
   .modal-empate-equipo { text-align: center; flex: 1; }
   .modal-empate-equipo .nombre { font-size: clamp(0.8rem, 1.8vw, 1rem); color: var(--text-primary); margin-bottom: 0.5vh; }
   .modal-empate-equipo .goles { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 900; color: var(--color-amarillo); }
   .modal-empate-vs { font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-muted); font-weight: 700; }
-  
-  .modal-empate-config {
-    margin: 2vh 0;
-    padding: 1.5vh;
-    background: var(--bg-tertiary);
-    border-radius: 0.8vh;
-  }
-  
-  .modal-empate-config label {
-    display: block;
-    font-size: clamp(0.8rem, 1.8vw, 1rem);
-    color: var(--color-amarillo);
-    margin-bottom: 1vh;
-  }
-  
+  .modal-empate-config { margin: 2vh 0; padding: 1.5vh; background: var(--bg-tertiary); border-radius: 0.8vh; }
+  .modal-empate-config label { display: block; font-size: clamp(0.8rem, 1.8vw, 1rem); color: var(--color-amarillo); margin-bottom: 1vh; }
   .modal-empate-config input {
-    width: 100%;
-    padding: 1vh;
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    text-align: center;
-    background: transparent;
-    color: var(--color-amarillo);
-    border: 2px solid var(--color-amarillo);
-    border-radius: 0.5vh;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 700;
+    width: 100%; padding: 1vh; font-size: clamp(1.5rem, 4vw, 2rem); text-align: center;
+    background: transparent; color: var(--color-amarillo); border: 2px solid var(--color-amarillo);
+    border-radius: 0.5vh; font-family: 'Orbitron', sans-serif; font-weight: 700;
   }
-  
-  .modal-empate-botones {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1vw;
-    margin-top: 2vh;
-  }
+  .modal-empate-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 1vw; margin-top: 2vh; }
   
   /* ============ MODAL GENERAL ============ */
   .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: var(--overlay-bg);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    padding: 2vh 2vw;
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--overlay-bg); z-index: 1000; justify-content: center; align-items: center; padding: 2vh 2vw;
   }
-  
   .modal-overlay.activo { display: flex; }
-  
   .modal {
-    background: var(--bg-primary);
-    border: 2px solid var(--text-primary);
-    padding: 3vh 3vw;
-    max-width: 90vw;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
+    background: var(--bg-primary); border: 2px solid var(--text-primary);
+    padding: 3vh 3vw; max-width: 90vw; width: 100%; max-height: 90vh; overflow-y: auto;
   }
-  
-  .modal h2 {
-    text-align: center;
-    color: var(--text-primary);
-    margin-bottom: 2vh;
-    font-size: clamp(1rem, 2.5vw, 1.4rem);
+  .modal h2 { text-align: center; color: var(--text-primary); margin-bottom: 2vh; font-size: clamp(1rem, 2.5vw, 1.4rem); }
+  .modal .aviso {
+    background: transparent; border: 1px solid var(--text-primary); padding: 1.5vh 1.5vw;
+    margin-bottom: 2vh; font-size: clamp(0.75rem, 1.8vw, 0.95rem); color: var(--text-primary);
+    text-align: center; font-family: 'Orbitron', sans-serif; font-weight: 400;
   }
-  
+  .modal .aviso.peligro { border-color: var(--color-rojo); color: var(--color-rojo); }
+  .modal .aviso.info { border-color: var(--color-azul); color: var(--color-azul); }
   .modal-opciones { display: flex; flex-direction: column; gap: 1.5vh; margin: 2vh 0; }
-  
   .modal-opcion {
-    padding: 1.5vh 1vw;
-    background: transparent;
-    border: 2px solid var(--text-primary);
-    border-radius: 0.5vh;
-    cursor: pointer;
-    color: var(--text-primary);
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(0.8rem, 1.8vw, 1rem);
-    text-align: center;
+    display: flex; align-items: center; gap: 1vw; padding: 1.5vh 1.5vw;
+    background: transparent; border: 1px solid var(--text-primary); border-radius: 0.5vh;
+    cursor: pointer; transition: all 0.2s;
   }
-  
-  .modal-opcion:active { background: rgba(128, 128, 128, 0.2); }
+  .modal-opcion:hover { background: rgba(128, 128, 128, 0.1); }
+  .modal-opcion input[type="radio"] { width: 2vh; height: 2vh; cursor: pointer; accent-color: var(--text-primary); }
+  .modal-opcion label { cursor: pointer; flex: 1; color: var(--text-primary); }
+  .modal-opcion .titulo-opcion { font-size: clamp(0.85rem, 1.8vw, 1rem); margin-bottom: 0.5vh; font-family: 'Orbitron', sans-serif; font-weight: 500; }
+  .modal-opcion .descripcion-opcion { font-size: clamp(0.65rem, 1.3vw, 0.8rem); color: var(--text-secondary); font-family: 'Orbitron', sans-serif; font-weight: 400; }
+  .modal-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 1vw; margin-top: 2vh; }
   
   /* ============ RESPONSIVE ============ */
   @media (orientation: landscape) and (max-height: 500px) {
     .header { height: 7vh; min-height: 45px; padding: 0.5vh 1.5vw; }
-    .btn-icono { width: 5vh; height: 5vh; min-width: 32px; min-height: 32px; }
+    .btn-icono { width: 6vh; height: 6vh; min-width: 40px; min-height: 40px; }
     .hora-actual { font-size: clamp(0.7rem, 1.5vw, 1rem); }
     .titulo-header { font-size: clamp(0.7rem, 1.5vw, 1rem); }
-    
-    .tiempo-display { font-size: clamp(4rem, 20vh, 8rem); }
-    .equipo-marcador .goles { font-size: clamp(2rem, 8vh, 4rem); }
-    
+    .tiempo-base { font-size: clamp(6rem, 30vh, 20rem); }
+    .tiempo-extra { font-size: clamp(2rem, 10vh, 7rem); }
     .historial-goles { max-height: 8vh; }
     .btn { min-height: 4vh; font-size: clamp(0.65rem, 1.3vw, 0.9rem); padding: 0.5vh 0.5vw; }
     .btn-mega { min-height: 6vh; }
@@ -895,13 +699,19 @@
   }
   
   @media (max-width: 480px) and (orientation: portrait) {
-    .tiempo-display { font-size: clamp(4rem, 18vw, 8rem); }
+    .tiempo-base { font-size: clamp(6rem, 25vw, 15rem); }
+    .tiempo-extra { font-size: clamp(2rem, 10vw, 6rem); }
     .equipo-marcador .goles { font-size: clamp(2rem, 8vw, 4rem); }
     .bracket-columna { min-width: 120px; }
   }
 </style>
 </head>
 <body>
+
+<!-- Video fallback para Wake Lock -->
+<video id="video-fallback" loop muted playsinline>
+  <source src="data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAB1tZGF0AAAA" type="video/mp4">
+</video>
 
 <!-- MODAL DE OPCIONES -->
 <div id="modal-opciones" class="modal-overlay">
@@ -920,11 +730,7 @@
   <div class="modal">
     <div class="modal-empate-contenido">
       <div class="modal-empate-titulo">⚠️ EMPATE - TIEMPO ADICIONAL OBLIGATORIO</div>
-      <div class="modal-empate-info">
-        El partido terminó en empate.<br>
-        Se debe jugar tiempo adicional para definir al ganador.
-      </div>
-      
+      <div class="modal-empate-info">El partido terminó en empate.<br>Se debe jugar tiempo adicional para definir al ganador.</div>
       <div class="modal-empate-marcador">
         <div class="modal-empate-equipo">
           <div class="nombre" id="empate-eq1-nombre">Equipo 1</div>
@@ -936,15 +742,40 @@
           <div class="goles" id="empate-eq2-goles">0</div>
         </div>
       </div>
-      
       <div class="modal-empate-config">
         <label>Duración del tiempo adicional (minutos):</label>
         <input type="number" id="empate-tiempo" value="5" min="1" max="30">
       </div>
-      
       <div class="modal-empate-botones">
         <button class="btn btn-warning" onclick="usarTiempoDefault()">⏱️ 5 MIN (DEFAULT)</button>
         <button class="btn btn-primary" onclick="iniciarTiempoAdicional()">▶ INICIAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE PANTALLA ENCENDIDA (WAKE LOCK) -->
+<div id="modal-wakelock" class="modal-overlay">
+  <div class="modal">
+    <h2>🔒 MANTENER PANTALLA ENCENDIDA</h2>
+    <div class="modal-opciones">
+      <div class="modal-opcion" onclick="activarWakeLock()">
+        <label>
+          <div class="titulo-opcion">🔒 Activar Bloqueo de Pantalla</div>
+          <div class="descripcion-opcion">La pantalla permanecerá encendida hasta que lo desactives</div>
+        </label>
+      </div>
+      <div class="modal-opcion" onclick="activarPantallaCompleta()">
+        <label>
+          <div class="titulo-opcion">📺 Pantalla Completa</div>
+          <div class="descripcion-opcion">Oculta la barra del navegador para mayor visibilidad</div>
+        </label>
+      </div>
+      <div class="modal-opcion" onclick="cerrarModalWakeLock()">
+        <label>
+          <div class="titulo-opcion">✕ Cerrar</div>
+          <div class="descripcion-opcion">Volver al marcador</div>
+        </label>
       </div>
     </div>
   </div>
@@ -970,7 +801,7 @@
     <div class="hora-actual" id="hora-equipos">00:00:00</div>
     <div class="titulo-header">Equipos</div>
     <div class="header-botones">
-      <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-equipos"></button>
+      <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-equipos">🌙</button>
       <button class="btn-icono" onclick="volverConfig()" title="Volver">⬅</button>
     </div>
   </div>
@@ -982,7 +813,6 @@
         <button class="btn btn-primary" onclick="agregarEquipo()" style="min-width: 60px;">+</button>
       </div>
     </div>
-    
     <div class="seccion-titulo">📋 Lista de Equipos (<span id="total-equipos">0</span>)</div>
     <div class="lista-equipos" id="lista-equipos"></div>
     <div id="seccion-orden" style="display: none;">
@@ -991,9 +821,7 @@
         <button class="btn btn-info" onclick="ordenCreacion()">📋 ORDEN CREACIÓN</button>
         <button class="btn btn-warning" onclick="ordenAleatorio()">🎲 ALEATORIO</button>
       </div>
-      <button class="btn btn-primary btn-full btn-mega" onclick="generarFixture()">
-        🏆 GENERAR FIXTURE
-      </button>
+      <button class="btn btn-primary btn-full btn-mega" onclick="generarFixture()">🏆 GENERAR FIXTURE</button>
     </div>
   </div>
 </div>
@@ -1009,19 +837,16 @@
       <button class="btn-icono" onclick="abrirModalOpciones()" title="Opciones">⚙</button>
     </div>
   </div>
-  
   <div class="fixture-contenido" id="fixture-contenido-captura">
     <div class="fixture-header-info">
-      <h2> Bracket del Torneo</h2>
+      <h2>📊 Bracket del Torneo</h2>
       <div class="subtitulo">
         <span id="fixture-total-equipos">0</span> equipos • 
         <span id="fixture-total-partidos">0</span> partidos • 
         Duración: <span id="fixture-duracion">8</span> min
       </div>
     </div>
-    
     <div class="bracket-wrapper" id="bracket-wrapper"></div>
-    
     <div class="fixture-leyenda">
       <div class="leyenda-item"><div class="leyenda-color pendiente"></div><span>Pendiente</span></div>
       <div class="leyenda-item"><div class="leyenda-color curso"></div><span>En Curso</span></div>
@@ -1030,14 +855,9 @@
       <div class="leyenda-item"><div class="leyenda-color campeon"></div><span>Campeón</span></div>
     </div>
   </div>
-  
   <div class="fixture-acciones" id="fixture-acciones">
-    <button class="btn btn-primary btn-mega" onclick="iniciarDesdeFixture()" id="btn-iniciar-fixture">
-      ▶ INICIAR PARTIDO 1
-    </button>
-    <button class="btn btn-info btn-mega" onclick="compartirFixture()" id="btn-compartir-fixture" style="display:none;">
-       COMPARTIR
-    </button>
+    <button class="btn btn-primary btn-mega" onclick="iniciarDesdeFixture()" id="btn-iniciar-fixture">▶ INICIAR PARTIDO 1</button>
+    <button class="btn btn-info btn-mega" onclick="compartirFixture()" id="btn-compartir-fixture" style="display:none;">📤 COMPARTIR</button>
   </div>
 </div>
 
@@ -1047,9 +867,10 @@
     <div class="hora-actual" id="hora-partido">00:00:00</div>
     <div class="titulo-header">Partido <span id="numero-partido">1</span><span id="indicador-adicional" style="color:var(--color-amarillo); margin-left:0.5vw;"></span></div>
     <div class="header-botones">
+      <button class="btn-icono" id="btn-wakelock" onclick="abrirModalWakeLock()" title="Mantener pantalla encendida">🔒</button>
       <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-partido">🌙</button>
       <button class="btn-icono" onclick="volverAGestionEquipos()" title="Gestión de equipos">👥</button>
-      <button class="btn-icono" onclick="verFixture()" title="Ver fixture"></button>
+      <button class="btn-icono" onclick="verFixture()" title="Ver fixture">🏆</button>
       <button class="btn-icono" onclick="abrirModalOpciones()" title="Opciones">⚙</button>
     </div>
   </div>
@@ -1067,11 +888,14 @@
     </div>
     <div id="aviso-empate" class="empate-aviso" style="display:none;">⚠️ TIEMPO ADICIONAL - EMPATE</div>
     <div class="contador-tiempo">
-      <div class="tiempo-display" id="tiempo-partido">00:00</div>
+      <div class="tiempo-display" id="tiempo-partido">
+        <span class="tiempo-base" id="tiempo-base-display">00:00</span>
+        <span class="tiempo-extra" id="tiempo-extra-display" style="display:none;"></span>
+      </div>
     </div>
     <div class="controles-goles">
       <div class="btn-gol-container">
-        <button class="btn-gol btn-gol-equipo1" onclick="agregarGol(1)"> GOL</button>
+        <button class="btn-gol btn-gol-equipo1" onclick="agregarGol(1)">⚽ GOL</button>
         <button class="btn-quitar-gol" onclick="quitarGol(1)">-1 (corregir)</button>
       </div>
       <div class="btn-gol-container">
@@ -1097,13 +921,14 @@
     <div class="hora-actual" id="hora-espera">00:00:00</div>
     <div class="titulo-header">Entre Partidos</div>
     <div class="header-botones">
-      <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-espera"></button>
+      <button class="btn-icono" id="btn-wakelock-espera" onclick="abrirModalWakeLock()" title="Mantener pantalla encendida">🔒</button>
+      <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-espera">🌙</button>
       <button class="btn-icono" onclick="volverAGestionEquipos()" title="Gestión de equipos">👥</button>
       <button class="btn-icono" onclick="verFixture()" title="Ver fixture">🏆</button>
     </div>
   </div>
   <div class="espera-contenido">
-    <div class="espera-titulo"> Próximo Partido</div>
+    <div class="espera-titulo">⏳ Próximo Partido</div>
     <div class="espera-tiempo" id="tiempo-espera">00:00</div>
     <div class="espera-info">
       <div class="linea">👑 Se queda: <span class="destacado-verde" id="equipo-ganador">-</span></div>
@@ -1121,7 +946,7 @@
 <div id="pantalla-historial" class="pantalla">
   <div class="header">
     <div class="hora-actual" id="hora-historial">00:00:00</div>
-    <div class="titulo-header"> Historial</div>
+    <div class="titulo-header">📋 Historial</div>
     <div class="header-botones">
       <button class="btn-icono" onclick="toggleTema()" title="Cambiar tema" id="btn-tema-historial">🌙</button>
       <button class="btn-icono" onclick="volverAlJuego()">⬅</button>
@@ -1129,9 +954,7 @@
   </div>
   <div class="scroll-content" id="lista-historial"></div>
   <div class="fixture-acciones" id="historial-acciones" style="display:none;">
-    <button class="btn btn-info btn-mega" onclick="compartirHistorial()">
-      📤 COMPARTIR HISTORIAL
-    </button>
+    <button class="btn btn-info btn-mega" onclick="compartirHistorial()">📤 COMPARTIR HISTORIAL</button>
   </div>
 </div>
 
@@ -1139,7 +962,7 @@
 <div id="pantalla-campeon" class="pantalla">
   <div class="header">
     <div class="hora-actual" id="hora-campeon">00:00:00</div>
-    <div class="titulo-header"> TORNEO FINALIZADO</div>
+    <div class="titulo-header">🏆 TORNEO FINALIZADO</div>
   </div>
   <div class="campeon-contenido">
     <div class="campeon-titulo">👑 CAMPEÓN DEL TORNEO 👑</div>
@@ -1192,6 +1015,10 @@ let torneoIniciado = false;
 
 let temaActual = localStorage.getItem('tema') || 'dark';
 
+// Wake Lock
+let wakeLockActivo = false;
+let wakeLockSentinel = null;
+
 // ============ TEMA ============
 function aplicarTema() {
   document.documentElement.setAttribute('data-theme', temaActual);
@@ -1211,10 +1038,7 @@ function toggleTema() {
 function actualizarHoraActual() {
   const ahora = new Date();
   const hora = ahora.toLocaleTimeString('es-ES', { hour12: false });
-  const elementos = [
-    'hora-equipos', 'hora-fixture', 'hora-partido', 
-    'hora-espera', 'hora-historial', 'hora-campeon'
-  ];
+  const elementos = ['hora-equipos', 'hora-fixture', 'hora-partido', 'hora-espera', 'hora-historial', 'hora-campeon'];
   elementos.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = hora;
@@ -1279,6 +1103,99 @@ function reproducirEmpate() {
   setTimeout(() => reproducirPitido(0.5, 500), 800);
 }
 
+// ============ WAKE LOCK ============
+async function activarWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLockSentinel = await navigator.wakeLock.request('screen');
+      wakeLockActivo = true;
+      actualizarIndicadorWakeLock();
+      wakeLockSentinel.addEventListener('release', () => { console.log('Wake Lock liberado'); });
+      document.addEventListener('visibilitychange', manejarVisibilidad);
+      alert('✓ Pantalla bloqueada. No se apagará automáticamente.');
+    } else {
+      activarVideoFallback();
+    }
+    cerrarModalWakeLock();
+  } catch (err) {
+    console.error('Error al activar Wake Lock:', err);
+    alert('⚠ No se pudo activar. Configura manualmente:\n\nAjustes → Pantalla → Tiempo de espera → Nunca');
+  }
+}
+
+function desactivarWakeLock() {
+  if (wakeLockSentinel) {
+    wakeLockSentinel.release();
+    wakeLockSentinel = null;
+  }
+  wakeLockActivo = false;
+  actualizarIndicadorWakeLock();
+  document.removeEventListener('visibilitychange', manejarVisibilidad);
+  const video = document.getElementById('video-fallback');
+  video.pause();
+}
+
+async function manejarVisibilidad() {
+  if (document.visibilityState === 'visible' && wakeLockActivo) {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLockSentinel = await navigator.wakeLock.request('screen');
+      }
+    } catch (err) {
+      console.error('Error al re-adquirir Wake Lock:', err);
+    }
+  }
+}
+
+function activarVideoFallback() {
+  const video = document.getElementById('video-fallback');
+  video.play().then(() => {
+    wakeLockActivo = true;
+    actualizarIndicadorWakeLock();
+    alert('✓ Modo de respaldo activado. La pantalla debería mantenerse encendida.');
+  }).catch(err => {
+    console.error('Error con video fallback:', err);
+    alert('⚠ No se pudo activar. Configura manualmente:\n\nAjustes → Pantalla → Tiempo de espera → Nunca');
+  });
+}
+
+function actualizarIndicadorWakeLock() {
+  const botones = document.querySelectorAll('[id^="btn-wakelock"]');
+  botones.forEach(btn => {
+    if (wakeLockActivo) {
+      btn.classList.add('wakelock-activo');
+      btn.textContent = '🔓';
+      btn.title = 'Pantalla bloqueada (tocar para desactivar)';
+      btn.onclick = () => {
+        if (confirm('¿Desactivar bloqueo de pantalla?')) {
+          desactivarWakeLock();
+        }
+      };
+    } else {
+      btn.classList.remove('wakelock-activo');
+      btn.textContent = '🔒';
+      btn.title = 'Mantener pantalla encendida';
+      btn.onclick = abrirModalWakeLock;
+    }
+  });
+}
+
+function abrirModalWakeLock() {
+  document.getElementById('modal-wakelock').classList.add('activo');
+}
+
+function cerrarModalWakeLock() {
+  document.getElementById('modal-wakelock').classList.remove('activo');
+}
+
+function activarPantallaCompleta() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) elem.requestFullscreen();
+  else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+  else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+  cerrarModalWakeLock();
+}
+
 // ============ NAVEGACIÓN ============
 function mostrarPantalla(id) {
   document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
@@ -1330,25 +1247,13 @@ function volverAlJuego() {
 // ============ COMPARTIR CAPTURAS ============
 async function compartirFixture() {
   const elemento = document.getElementById('fixture-contenido-captura');
-  
   try {
-    const canvas = await html2canvas(elemento, {
-      backgroundColor: temaActual === 'dark' ? '#0a0a0a' : '#fff',
-      scale: 2,
-      useCORS: true
-    });
-    
+    const canvas = await html2canvas(elemento, { backgroundColor: temaActual === 'dark' ? '#0a0a0a' : '#fff', scale: 2, useCORS: true });
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     const file = new File([blob], 'fixture-torneo.png', { type: 'image/png' });
-    
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        files: [file],
-        title: 'Fixture del Torneo',
-        text: ' Resultado del Torneo Rey de la Cancha'
-      });
+      await navigator.share({ files: [file], title: 'Fixture del Torneo', text: '🏆 Resultado del Torneo Rey de la Cancha' });
     } else {
-      // Fallback: descargar imagen
       const link = document.createElement('a');
       link.download = 'fixture-torneo.png';
       link.href = canvas.toDataURL();
@@ -1357,29 +1262,18 @@ async function compartirFixture() {
     }
   } catch (error) {
     console.error('Error al compartir:', error);
-    alert(' Error al generar la captura');
+    alert('❌ Error al generar la captura');
   }
 }
 
 async function compartirHistorial() {
   const elemento = document.getElementById('lista-historial');
-  
   try {
-    const canvas = await html2canvas(elemento, {
-      backgroundColor: temaActual === 'dark' ? '#000' : '#f5f5f5',
-      scale: 2,
-      useCORS: true
-    });
-    
+    const canvas = await html2canvas(elemento, { backgroundColor: temaActual === 'dark' ? '#000' : '#f5f5f5', scale: 2, useCORS: true });
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     const file = new File([blob], 'historial-torneo.png', { type: 'image/png' });
-    
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        files: [file],
-        title: 'Historial del Torneo',
-        text: '📋 Historial completo del Torneo Rey de la Cancha'
-      });
+      await navigator.share({ files: [file], title: 'Historial del Torneo', text: '📋 Historial completo del Torneo Rey de la Cancha' });
     } else {
       const link = document.createElement('a');
       link.download = 'historial-torneo.png';
@@ -1395,11 +1289,7 @@ async function compartirHistorial() {
 
 // ============ FIXTURE / BRACKET ============
 function generarFixture() {
-  if (equipos.length < 2) {
-    alert('Necesitas al menos 2 equipos');
-    return;
-  }
-  
+  if (equipos.length < 2) { alert('Necesitas al menos 2 equipos'); return; }
   equipo1 = equipos[0];
   equipo2 = equipos[1];
   colaEquipos = equipos.slice(2);
@@ -1407,7 +1297,6 @@ function generarFixture() {
   torneoFinalizado = false;
   equipoCampeon = null;
   torneoIniciado = true;
-  
   actualizarSeccionEquipos();
   renderizarBracket();
   mostrarPantalla('pantalla-fixture');
@@ -1421,15 +1310,13 @@ function formatearHora(fecha) {
 function renderizarBracket() {
   const wrapper = document.getElementById('bracket-wrapper');
   wrapper.innerHTML = '';
-  
   document.getElementById('fixture-total-equipos').textContent = equipos.length + esquivos.length;
   document.getElementById('fixture-duracion').textContent = configTiempo;
   
   const partidosJugados = historialPartidos.length;
   const partidosPendientes = colaEquipos.length + esquivos.length;
   const hayPartidoEnCurso = (equipo1 && equipo2 && !torneoFinalizado);
-  const totalCalculado = partidosJugados + partidosPendientes + (hayPartidoEnCurso ? 1 : 0);
-  document.getElementById('fixture-total-partidos').textContent = totalCalculado || (equipos.length - 1 + esquivos.length);
+  document.getElementById('fixture-total-partidos').textContent = (partidosJugados + partidosPendientes + (hayPartidoEnCurso ? 1 : 0)) || (equipos.length - 1 + esquivos.length);
   
   let ultimoGanadorConocido = null;
   if (historialPartidos.length > 0) {
@@ -1443,42 +1330,22 @@ function renderizarBracket() {
     colJugados.innerHTML = `<div class="bracket-columna-titulo">Jugados (${historialPartidos.length})</div>`;
     const partidosDiv = document.createElement('div');
     partidosDiv.className = 'bracket-partidos';
-    
     historialPartidos.forEach(p => {
       const eq1Gana = p.goles1 > p.goles2;
       const eq2Gana = p.goles2 > p.goles1;
       const div = document.createElement('div');
       div.className = 'bracket-partido terminado';
-      
-      let horaHtml = '';
-      if (p.fechaInicio || p.fechaFin) {
-        horaHtml = `<div class="bracket-partido-hora">${formatearHora(p.fechaInicio)} - ${formatearHora(p.fechaFin)}</div>`;
-      }
-      
+      let horaHtml = (p.fechaInicio || p.fechaFin) ? `<div class="bracket-partido-hora">${formatearHora(p.fechaInicio)} - ${formatearHora(p.fechaFin)}</div>` : '';
       div.innerHTML = `
-        <div class="bracket-partido-numero">P${p.numero}</div>
-        ${horaHtml}
-        <div class="bracket-equipo ${eq1Gana ? 'ganador' : ''}">
-          <span class="bracket-equipo-nombre">${p.equipo1}</span>
-          <span class="bracket-equipo-goles">${p.goles1}</span>
-        </div>
-        <div class="bracket-equipo ${eq2Gana ? 'ganador' : ''}">
-          <span class="bracket-equipo-nombre">${p.equipo2}</span>
-          <span class="bracket-equipo-goles">${p.goles2}</span>
-        </div>
+        <div class="bracket-partido-numero">P${p.numero}</div>${horaHtml}
+        <div class="bracket-equipo ${eq1Gana ? 'ganador' : ''}"><span class="bracket-equipo-nombre">${p.equipo1}</span><span class="bracket-equipo-goles">${p.goles1}</span></div>
+        <div class="bracket-equipo ${eq2Gana ? 'ganador' : ''}"><span class="bracket-equipo-nombre">${p.equipo2}</span><span class="bracket-equipo-goles">${p.goles2}</span></div>
       `;
       partidosDiv.appendChild(div);
     });
-    
     colJugados.appendChild(partidosDiv);
     wrapper.appendChild(colJugados);
-    
-    if (equipo1 && equipo2 && !torneoFinalizado) {
-      const conector = document.createElement('div');
-      conector.className = 'bracket-conector';
-      conector.innerHTML = '→';
-      wrapper.appendChild(conector);
-    } else if (torneoFinalizado && equipoCampeon) {
+    if ((equipo1 && equipo2 && !torneoFinalizado) || (torneoFinalizado && equipoCampeon)) {
       const conector = document.createElement('div');
       conector.className = 'bracket-conector';
       conector.innerHTML = '→';
@@ -1492,37 +1359,18 @@ function renderizarBracket() {
     colCurso.innerHTML = `<div class="bracket-columna-titulo">En Curso</div>`;
     const partidosDiv = document.createElement('div');
     partidosDiv.className = 'bracket-partidos';
-    
     const div = document.createElement('div');
     div.className = 'bracket-partido en-curso';
-    
-    let horaHtml = '';
-    if (fechaInicioPartido) {
-      horaHtml = `<div class="bracket-partido-hora">Inicio: ${formatearHora(fechaInicioPartido)}</div>`;
-    }
-    
-    let indicadorAdicional = '';
-    if (esTiempoAdicional) {
-      indicadorAdicional = `<div class="bracket-partido-hora" style="color:var(--color-amarillo);">⚡ TIEMPO ADICIONAL</div>`;
-    }
-    
+    let horaHtml = fechaInicioPartido ? `<div class="bracket-partido-hora">Inicio: ${formatearHora(fechaInicioPartido)}</div>` : '';
+    let indicadorAdicional = esTiempoAdicional ? `<div class="bracket-partido-hora" style="color:var(--color-amarillo);">⚡ TIEMPO ADICIONAL</div>` : '';
     div.innerHTML = `
-      <div class="bracket-partido-numero">Partido ${partidoActual}</div>
-      ${horaHtml}
-      ${indicadorAdicional}
-      <div class="bracket-equipo">
-        <span class="bracket-equipo-nombre">${equipo1.nombre}</span>
-        <span class="bracket-equipo-goles">${golesEquipo1}</span>
-      </div>
-      <div class="bracket-equipo">
-        <span class="bracket-equipo-nombre">${equipo2.nombre}</span>
-        <span class="bracket-equipo-goles">${golesEquipo2}</span>
-      </div>
+      <div class="bracket-partido-numero">Partido ${partidoActual}</div>${horaHtml}${indicadorAdicional}
+      <div class="bracket-equipo"><span class="bracket-equipo-nombre">${equipo1.nombre}</span><span class="bracket-equipo-goles">${golesEquipo1}</span></div>
+      <div class="bracket-equipo"><span class="bracket-equipo-nombre">${equipo2.nombre}</span><span class="bracket-equipo-goles">${golesEquipo2}</span></div>
     `;
     partidosDiv.appendChild(div);
     colCurso.appendChild(partidosDiv);
     wrapper.appendChild(colCurso);
-    
     const conector = document.createElement('div');
     conector.className = 'bracket-conector';
     conector.innerHTML = '→';
@@ -1535,49 +1383,31 @@ function renderizarBracket() {
     colPendientes.innerHTML = `<div class="bracket-columna-titulo">Pendientes (${colaEquipos.length})</div>`;
     const partidosDiv = document.createElement('div');
     partidosDiv.className = 'bracket-partidos';
-    
     let nombreEquipoAvanza = 'Por definir';
     let esPorDefinir = true;
-    
     if (ultimoGanadorConocido && !hayPartidoEnCurso) {
       nombreEquipoAvanza = ultimoGanadorConocido.nombre;
       esPorDefinir = false;
     }
-    
     colaEquipos.forEach((equipo, index) => {
       const numPartido = partidoActual + index + (equipo1 && equipo2 && !torneoFinalizado ? 1 : 0);
       const div = document.createElement('div');
       div.className = 'bracket-partido pendiente';
       div.innerHTML = `
         <div class="bracket-partido-numero">Partido ${numPartido}</div>
-        <div class="bracket-equipo ${esPorDefinir ? 'por-definir' : ''}">
-          <span class="bracket-equipo-nombre">${nombreEquipoAvanza}</span>
-          <span class="bracket-equipo-goles">-</span>
-        </div>
-        <div class="bracket-equipo">
-          <span class="bracket-equipo-nombre">${equipo.nombre}</span>
-          <span class="bracket-equipo-goles">-</span>
-        </div>
+        <div class="bracket-equipo ${esPorDefinir ? 'por-definir' : ''}"><span class="bracket-equipo-nombre">${nombreEquipoAvanza}</span><span class="bracket-equipo-goles">-</span></div>
+        <div class="bracket-equipo"><span class="bracket-equipo-nombre">${equipo.nombre}</span><span class="bracket-equipo-goles">-</span></div>
       `;
       partidosDiv.appendChild(div);
       nombreEquipoAvanza = 'Por definir';
       esPorDefinir = true;
     });
-    
     colPendientes.appendChild(partidosDiv);
     wrapper.appendChild(colPendientes);
-    
-    if (esquivos.length > 0) {
-      const conector = document.createElement('div');
-      conector.className = 'bracket-conector';
-      conector.innerHTML = '→';
-      wrapper.appendChild(conector);
-    } else {
-      const conector = document.createElement('div');
-      conector.className = 'bracket-conector';
-      conector.innerHTML = '→';
-      wrapper.appendChild(conector);
-    }
+    const conector = document.createElement('div');
+    conector.className = 'bracket-conector';
+    conector.innerHTML = '→';
+    wrapper.appendChild(conector);
   }
   
   if (esquivos.length > 0) {
@@ -1586,28 +1416,19 @@ function renderizarBracket() {
     colEsquivos.innerHTML = `<div class="bracket-columna-titulo">Esquivos (${esquivos.length})</div>`;
     const partidosDiv = document.createElement('div');
     partidosDiv.className = 'bracket-partidos';
-    
     esquivos.forEach((equipo, index) => {
       const numPartido = partidoActual + colaEquipos.length + index + (equipo1 && equipo2 && !torneoFinalizado ? 1 : 0);
       const div = document.createElement('div');
       div.className = 'bracket-partido esquivo';
       div.innerHTML = `
         <div class="bracket-partido-numero">P${numPartido} (Esquivo)</div>
-        <div class="bracket-equipo por-definir">
-          <span class="bracket-equipo-nombre">Ganador anterior</span>
-          <span class="bracket-equipo-goles">-</span>
-        </div>
-        <div class="bracket-equipo">
-          <span class="bracket-equipo-nombre">${equipo.nombre}</span>
-          <span class="bracket-equipo-goles">-</span>
-        </div>
+        <div class="bracket-equipo por-definir"><span class="bracket-equipo-nombre">Ganador anterior</span><span class="bracket-equipo-goles">-</span></div>
+        <div class="bracket-equipo"><span class="bracket-equipo-nombre">${equipo.nombre}</span><span class="bracket-equipo-goles">-</span></div>
       `;
       partidosDiv.appendChild(div);
     });
-    
     colEsquivos.appendChild(partidosDiv);
     wrapper.appendChild(colEsquivos);
-    
     const conector = document.createElement('div');
     conector.className = 'bracket-conector';
     conector.innerHTML = '→';
@@ -1616,15 +1437,12 @@ function renderizarBracket() {
   
   const colCampeon = document.createElement('div');
   colCampeon.className = 'bracket-campeon';
-  
   let campeonNombre = 'Por definir';
   let campeonClase = 'vacio';
-  
   if (torneoFinalizado && equipoCampeon) {
     campeonNombre = equipoCampeon.nombre;
     campeonClase = '';
   }
-  
   colCampeon.innerHTML = `
     <div class="bracket-campeon-trofeo">🏆</div>
     <div class="bracket-campeon-label">Campeón</div>
@@ -1675,7 +1493,6 @@ function verFixture() {
 function actualizarSeccionEquipos() {
   const seccionAgregar = document.getElementById('seccion-agregar-equipos');
   const seccionOrden = document.getElementById('seccion-orden');
-  
   if (torneoIniciado) {
     if (seccionAgregar) seccionAgregar.style.display = 'none';
     if (seccionOrden) seccionOrden.style.display = 'none';
@@ -1697,13 +1514,7 @@ function agregarEquipo() {
   const input = document.getElementById('nombre-nuevo-equipo');
   const nombre = input.value.trim();
   if (nombre) {
-    equipos.push({
-      id: Date.now(),
-      nombre: nombre,
-      ganados: 0,
-      goles: 0,
-      partidos: 0
-    });
+    equipos.push({ id: Date.now(), nombre: nombre, ganados: 0, goles: 0, partidos: 0 });
     input.value = '';
     actualizarListaEquipos();
   }
@@ -1717,10 +1528,8 @@ function eliminarEquipo(id) {
 function actualizarListaEquipos() {
   const lista = document.getElementById('lista-equipos');
   const total = document.getElementById('total-equipos');
-  
   lista.innerHTML = '';
   total.textContent = equipos.length;
-  
   equipos.forEach((equipo, index) => {
     const div = document.createElement('div');
     div.className = 'equipo-item';
@@ -1731,7 +1540,6 @@ function actualizarListaEquipos() {
     `;
     lista.appendChild(div);
   });
-  
   actualizarSeccionEquipos();
 }
 
@@ -1751,7 +1559,6 @@ function ordenAleatorio() {
 // ============ PARTIDO ============
 function iniciarPartido() {
   fechaInicioPartido = new Date();
-  
   document.getElementById('numero-partido').textContent = partidoActual;
   document.getElementById('nombre-equipo1').textContent = equipo1.nombre;
   document.getElementById('nombre-equipo2').textContent = equipo2.nombre;
@@ -1771,6 +1578,7 @@ function iniciarPartido() {
   document.getElementById('lista-goles').innerHTML = '';
   document.getElementById('aviso-empate').style.display = 'none';
   document.getElementById('indicador-adicional').textContent = '';
+  document.getElementById('tiempo-extra-display').style.display = 'none';
   
   mostrarPantalla('pantalla-partido');
   actualizarDisplayTiempo();
@@ -1783,13 +1591,10 @@ function iniciarIntervaloPartido() {
     if (!pausaActiva) {
       tiempoActual++;
       actualizarDisplayTiempo();
-      
       if (tiempoActual === configTiempo * 60 - 10 && !esTiempoAdicional) {
         reproducirAviso();
         document.getElementById('tiempo-partido').classList.add('aviso');
-        setTimeout(() => {
-          document.getElementById('tiempo-partido').classList.remove('aviso');
-        }, 5000);
+        setTimeout(() => { document.getElementById('tiempo-partido').classList.remove('aviso'); }, 5000);
       }
     }
   }, 1000);
@@ -1798,7 +1603,7 @@ function iniciarIntervaloPartido() {
 function actualizarDisplayTiempo() {
   const m = Math.floor(tiempoActual / 60).toString().padStart(2, '0');
   const s = (tiempoActual % 60).toString().padStart(2, '0');
-  document.getElementById('tiempo-partido').textContent = `${m}:${s}`;
+  document.getElementById('tiempo-base-display').textContent = `${m}:${s}`;
 }
 
 function togglePausa() {
@@ -1814,15 +1619,12 @@ function agregarGol(equipo) {
     golesEquipo2++;
     document.getElementById('goles-equipo2').textContent = golesEquipo2;
   }
-  
   const m = Math.floor(tiempoActual / 60).toString().padStart(2, '0');
   const s = (tiempoActual % 60).toString().padStart(2, '0');
   const nombreEquipo = equipo === 1 ? equipo1.nombre : equipo2.nombre;
-  
   golesRegistro.push({ minuto: `${m}:${s}`, equipo: equipo, nombre: nombreEquipo });
   actualizarHistorialGoles();
   reproducirGol();
-  
   if (golesEquipo1 !== golesEquipo2) {
     document.getElementById('tiempo-partido').classList.remove('empate');
   }
@@ -1849,22 +1651,16 @@ function quitarGol(equipo) {
 function actualizarHistorialGoles() {
   const contenedor = document.getElementById('historial-goles');
   const lista = document.getElementById('lista-goles');
-  
   if (golesRegistro.length === 0) {
     contenedor.style.display = 'none';
     return;
   }
-  
   contenedor.style.display = 'block';
   lista.innerHTML = '';
-  
   golesRegistro.forEach((gol) => {
     const div = document.createElement('div');
     div.className = 'gol-item';
-    div.innerHTML = `
-      <span class="minuto">${gol.minuto}'</span>
-      <span class="equipo-gol eq${gol.equipo}">⚽ ${gol.nombre}</span>
-    `;
+    div.innerHTML = `<span class="minuto">${gol.minuto}'</span><span class="equipo-gol eq${gol.equipo}">⚽ ${gol.nombre}</span>`;
     lista.appendChild(div);
   });
 }
@@ -1884,13 +1680,11 @@ function intentarFinalizarPartido() {
 
 function mostrarModalEmpate() {
   reproducirEmpate();
-  
   document.getElementById('empate-eq1-nombre').textContent = equipo1.nombre;
   document.getElementById('empate-eq2-nombre').textContent = equipo2.nombre;
   document.getElementById('empate-eq1-goles').textContent = golesEquipo1;
   document.getElementById('empate-eq2-goles').textContent = golesEquipo2;
   document.getElementById('empate-tiempo').value = tiempoAdicionalConfig;
-  
   document.getElementById('modal-empate').classList.add('activo');
 }
 
@@ -1903,9 +1697,7 @@ function usarTiempoDefault() {
 function iniciarTiempoAdicional() {
   const minutos = parseInt(document.getElementById('empate-tiempo').value) || 5;
   tiempoAdicionalConfig = minutos;
-  
   cerrarModal();
-  
   esTiempoAdicional = true;
   configTiempo = minutos;
   tiempoActual = 0;
@@ -1914,6 +1706,8 @@ function iniciarTiempoAdicional() {
   document.getElementById('aviso-empate').style.display = 'block';
   document.getElementById('tiempo-partido').classList.add('empate');
   document.getElementById('indicador-adicional').textContent = ' ⚡ ADICIONAL';
+  document.getElementById('tiempo-extra-display').style.display = 'inline';
+  document.getElementById('tiempo-extra-display').textContent = `+00:00`;
   document.getElementById('btn-pausa').textContent = '⏸';
   
   iniciarIntervaloPartido();
@@ -1923,18 +1717,12 @@ function iniciarTiempoAdicional() {
 function finalizarPartido() {
   clearInterval(intervaloPrincipal);
   reproducirPitidoFinal();
-  
   const fechaFinPartido = new Date();
   
   let ganador, perdedor;
-  if (golesEquipo1 > golesEquipo2) {
-    ganador = equipo1; perdedor = equipo2;
-  } else if (golesEquipo2 > golesEquipo1) {
-    ganador = equipo2; perdedor = equipo1;
-  } else {
-    ganador = Math.random() > 0.5 ? equipo1 : equipo2;
-    perdedor = ganador === equipo1 ? equipo2 : equipo1;
-  }
+  if (golesEquipo1 > golesEquipo2) { ganador = equipo1; perdedor = equipo2; }
+  else if (golesEquipo2 > golesEquipo1) { ganador = equipo2; perdedor = equipo1; }
+  else { ganador = Math.random() > 0.5 ? equipo1 : equipo2; perdedor = ganador === equipo1 ? equipo2 : equipo1; }
   
   ganador.ganados++;
   ganador.goles += (ganador === equipo1 ? golesEquipo1 : golesEquipo2);
@@ -1942,7 +1730,6 @@ function finalizarPartido() {
   perdedor.partidos++;
   
   const esEsquivoActual = esquivos.some(e => e.nombre === equipo2.nombre);
-  
   historialPartidos.push({
     numero: partidoActual,
     equipo1: equipo1.nombre,
@@ -1971,13 +1758,8 @@ function finalizarPartido() {
 
 function prepararSiguientePartido(ganador) {
   equipo1 = ganador;
-  
-  if (esquivos.length > 0) {
-    equipo2 = esquivos.shift();
-  } else if (colaEquipos.length > 0) {
-    equipo2 = colaEquipos.shift();
-  }
-  
+  if (esquivos.length > 0) { equipo2 = esquivos.shift(); }
+  else if (colaEquipos.length > 0) { equipo2 = colaEquipos.shift(); }
   partidoActual++;
   mostrarPantallaEspera();
 }
@@ -1986,12 +1768,10 @@ function prepararSiguientePartido(ganador) {
 function mostrarPantallaEspera() {
   document.getElementById('equipo-ganador').textContent = equipo1.nombre;
   document.getElementById('equipo-entra').textContent = equipo2 ? equipo2.nombre : '-';
-  
   tiempoEspera = configEspera * 60;
   pausaEsperaActiva = false;
-  document.getElementById('btn-pausa-espera').textContent = '';
+  document.getElementById('btn-pausa-espera').textContent = '⏸';
   actualizarDisplayEspera();
-  
   mostrarPantalla('pantalla-espera');
   iniciarIntervaloEspera();
 }
@@ -2002,14 +1782,10 @@ function iniciarIntervaloEspera() {
     if (!pausaEsperaActiva) {
       tiempoEspera--;
       actualizarDisplayEspera();
-      
       if (tiempoEspera <= 0) {
         clearInterval(intervaloEspera);
-        if (equipo2) {
-          iniciarPartido();
-        } else {
-          alert('No hay más equipos disponibles');
-        }
+        if (equipo2) { iniciarPartido(); }
+        else { alert('No hay más equipos disponibles'); }
       }
     }
   }, 1000);
@@ -2033,11 +1809,8 @@ function continuarEspera() {
 
 function saltarEspera() {
   clearInterval(intervaloEspera);
-  if (equipo2) {
-    iniciarPartido();
-  } else {
-    alert('No hay más equipos disponibles');
-  }
+  if (equipo2) { iniciarPartido(); }
+  else { alert('No hay más equipos disponibles'); }
 }
 
 // ============ HISTORIAL ============
@@ -2054,36 +1827,21 @@ function verHistorial() {
     historialPartidos.forEach(partido => {
       const div = document.createElement('div');
       div.className = `partido-historial ${partido.esEsquivo ? 'esquivo' : ''}`;
-      
-      let horarioHtml = '';
-      if (partido.fechaInicio || partido.fechaFin) {
-        horarioHtml = `<div class="horario">🕐 ${formatearHora(partido.fechaInicio)} - ${formatearHora(partido.fechaFin)}</div>`;
-      }
-      
-      let adicionalHtml = '';
-      if (partido.fueTiempoAdicional) {
-        adicionalHtml = `<div class="horario" style="color:var(--color-amarillo);">⚡ Tiempo adicional: ${partido.duracionAdicional} min</div>`;
-      }
-      
+      let horarioHtml = (partido.fechaInicio || partido.fechaFin) ? `<div class="horario">🕐 ${formatearHora(partido.fechaInicio)} - ${formatearHora(partido.fechaFin)}</div>` : '';
+      let adicionalHtml = partido.fueTiempoAdicional ? `<div class="horario" style="color:var(--color-amarillo);">⚡ Tiempo adicional: ${partido.duracionAdicional} min</div>` : '';
       let golesHtml = '';
       if (partido.golesRegistro && partido.golesRegistro.length > 0) {
         golesHtml = '<div style="margin-top: 0.8vh; font-size: 0.8em; color: var(--text-secondary);">';
-        partido.golesRegistro.forEach(gol => {
-          golesHtml += `${gol.minuto}' ⚽ ${gol.nombre} | `;
-        });
+        partido.golesRegistro.forEach(gol => { golesHtml += `${gol.minuto}' ⚽ ${gol.nombre} | `; });
         golesHtml = golesHtml.slice(0, -3) + '</div>';
       }
-      
       div.innerHTML = `
         <div class="info">
           <span class="numero">Partido ${partido.numero}</span>
           ${partido.esEsquivo ? '<span class="tipo">Esquivo</span>' : ''}
-          ${horarioHtml}
-          ${adicionalHtml}
+          ${horarioHtml}${adicionalHtml}
         </div>
-        <div class="resultado">
-          ${partido.equipo1} ${partido.goles1} - ${partido.goles2} ${partido.equipo2}
-        </div>
+        <div class="resultado">${partido.equipo1} ${partido.goles1} - ${partido.goles2} ${partido.equipo2}</div>
         <div class="ganador">✓ Ganador: ${partido.ganador}</div>
         ${golesHtml}
       `;
@@ -2091,7 +1849,6 @@ function verHistorial() {
     });
     accionesDiv.style.display = 'flex';
   }
-  
   mostrarPantalla('pantalla-historial');
 }
 
@@ -2114,6 +1871,7 @@ function reiniciarTorneo() {
 document.addEventListener('DOMContentLoaded', () => {
   aplicarTema();
   iniciarRelojHora();
+  actualizarIndicadorWakeLock();
 });
 </script>
 
