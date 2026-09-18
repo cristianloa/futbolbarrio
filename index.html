@@ -58,7 +58,7 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  
+
   html, body {
     width: 100%; height: 100%;
     overflow: hidden;
@@ -69,17 +69,18 @@
     user-select: none;
     transition: background 0.3s, color 0.3s;
   }
-  
+
   body {
-    display: flex; justify-content: center; align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
     min-height: 100dvh;
   }
-  
-  /* ÁREA SEGURA: navegador + app instalada (notch, barras) */
+
   .pantalla {
     display: none;
-    width: 100vw;
+    width: 100%;
     height: 100vh;
     height: 100dvh;
     background: var(--bg-primary);
@@ -90,9 +91,8 @@
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
   }
-  
   .pantalla.activa { display: flex; }
-  
+
   .header {
     display: flex;
     justify-content: space-between;
@@ -105,7 +105,6 @@
     flex-shrink: 0;
     gap: 1vw;
   }
-  
   .hora-actual {
     font-size: clamp(0.9rem, 2vw, 1.3rem);
     color: var(--color-amarillo);
@@ -113,7 +112,6 @@
     letter-spacing: 0.05em;
     white-space: nowrap;
   }
-  
   .titulo-header {
     font-size: clamp(0.8rem, 2vw, 1.2rem);
     color: var(--color-amarillo);
@@ -126,9 +124,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
   .header-botones { display: flex; gap: 1.5vw; align-items: center; }
-  
+
   .btn-icono {
     width: 8vh; height: 8vh;
     min-width: 50px; min-height: 50px;
@@ -140,40 +137,56 @@
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
-    font-family: 'Orbitron', sans-serif;
     position: relative;
+    flex-shrink: 0;
   }
-  
-  .btn-icono:active { transform: scale(0.9); background: rgba(128, 128, 128, 0.3); }
-  
+  .btn-icono:active { transform: scale(0.9); background: rgba(128,128,128,0.3); }
   .btn-icono.wakelock-activo { border-color: var(--color-verde); color: var(--color-verde); }
-  
   .btn-icono.wakelock-activo::after {
     content: '';
-    position: absolute;
-    top: -2px; right: -2px;
+    position: absolute; top: -2px; right: -2px;
     width: 12px; height: 12px;
     background: var(--color-verde);
     border-radius: 50%;
     animation: pulso 2s infinite;
   }
-  
-  @keyframes pulso {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.2); }
-  }
+  @keyframes pulso { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(1.2);} }
 
-  .scroll-content { flex: 1; overflow-y: auto; padding: 2vh 4vw; }
-  
-  .config-contenido {
+  /* ============ CENTRADO GLOBAL (vertical + horizontal, seguro con scroll) ============ */
+  .config-contenido,
+  .espera-contenido,
+  .campeon-contenido,
+  .marcador-contenido {
     flex: 1;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    padding: 4vh 4vw;
-    gap: 2.5vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;          /* centrado horizontal */
+    justify-content: flex-start;
     overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1vh 2vw;
   }
-  
+  /* Truco de márgenes auto: centra verticalmente sin cortar contenido al hacer scroll */
+  .config-contenido > :first-child,
+  .espera-contenido > :first-child,
+  .campeon-contenido > :first-child,
+  .marcador-contenido > :first-child { margin-top: auto; }
+  .config-contenido > :last-child,
+  .espera-contenido > :last-child,
+  .campeon-contenido > :last-child,
+  .marcador-contenido > :last-child { margin-bottom: auto; }
+
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2vh 4vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;          /* centrado horizontal de la lista */
+  }
+  .scroll-content > * { width: 100%; max-width: 700px; }
+
   .config-contenido h1 {
     font-size: clamp(1.3rem, 4vw, 2.2rem);
     color: var(--color-amarillo);
@@ -181,14 +194,11 @@
     text-transform: uppercase;
     letter-spacing: 0.15em;
   }
-  
   .config-form {
     width: 100%; max-width: 500px;
     display: flex; flex-direction: column; gap: 2vh;
   }
-  
   .config-form label { font-size: clamp(0.85rem, 2vw, 1rem); color: var(--text-primary); }
-  
   .config-form input {
     padding: 1.5vh 1vw;
     font-size: clamp(1.5rem, 4vw, 2.5rem);
@@ -199,9 +209,8 @@
     border-radius: 0.5vh;
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
-    letter-spacing: -0.02em;
   }
-  
+
   .btn {
     border: 2px solid var(--text-primary);
     border-radius: 0.4vh;
@@ -216,23 +225,15 @@
     padding: 0.8vh 0.8vw;
     min-height: 5vh;
     text-transform: uppercase;
-    gap: 0.3vw;
   }
-  
-  .btn:active { transform: scale(0.95); background: rgba(128, 128, 128, 0.3); }
-  
+  .btn:active { transform: scale(0.95); background: rgba(128,128,128,0.3); }
   .btn-full { width: 100%; }
-  .btn-primary { background: rgba(0, 255, 0, 0.2); border-color: var(--color-verde); color: var(--color-verde); }
-  .btn-warning { background: rgba(255, 204, 0, 0.2); border-color: var(--color-amarillo); color: var(--color-amarillo); }
-  .btn-danger { background: rgba(255, 0, 0, 0.2); border-color: var(--color-rojo); color: var(--color-rojo); }
-  .btn-info { background: rgba(0, 136, 255, 0.2); border-color: var(--color-azul); color: var(--color-azul); }
-  .btn-mega {
-    min-height: 8vh;
-    font-size: clamp(0.9rem, 2vw, 1.2rem);
-    border-width: 3px;
-    letter-spacing: 0.1em;
-  }
-  
+  .btn-primary { background: rgba(0,255,0,0.2); border-color: var(--color-verde); color: var(--color-verde); }
+  .btn-warning { background: rgba(255,204,0,0.2); border-color: var(--color-amarillo); color: var(--color-amarillo); }
+  .btn-danger { background: rgba(255,0,0,0.2); border-color: var(--color-rojo); color: var(--color-rojo); }
+  .btn-info { background: rgba(0,136,255,0.2); border-color: var(--color-azul); color: var(--color-azul); }
+  .btn-mega { min-height: 8vh; font-size: clamp(0.9rem,2vw,1.2rem); border-width: 3px; letter-spacing: 0.1em; }
+
   .seccion-titulo {
     font-size: clamp(0.9rem, 2.2vw, 1.1rem);
     color: var(--color-amarillo);
@@ -240,9 +241,7 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
-  
   .lista-equipos { display: flex; flex-direction: column; gap: 1vh; margin-bottom: 3vh; }
-  
   .equipo-item {
     display: flex; align-items: center; gap: 1vw;
     padding: 1.5vh 1vw;
@@ -250,83 +249,77 @@
     border: 2px solid var(--border-color);
     border-radius: 0.5vh;
   }
-  
-  .equipo-numero { font-size: clamp(0.9rem, 2vw, 1.2rem); color: var(--text-secondary); min-width: 30px; }
-  .equipo-nombre { flex: 1; font-size: clamp(0.95rem, 2.2vw, 1.2rem); color: var(--text-primary); font-weight: 700; }
-  
+  .equipo-numero { font-size: clamp(0.9rem,2vw,1.2rem); color: var(--text-secondary); min-width: 30px; }
+  .equipo-nombre { flex: 1; font-size: clamp(0.95rem,2.2vw,1.2rem); color: var(--text-primary); font-weight: 700; }
   .equipo-eliminar {
     width: 5vh; height: 5vh;
     border: 2px solid var(--color-rojo);
     border-radius: 50%;
     background: transparent;
     color: var(--color-rojo);
-    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-size: clamp(1rem,2vw,1.5rem);
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
   }
-  
   .agregar-equipo-form { display: flex; gap: 1vw; margin-bottom: 2vh; }
-  
   .agregar-equipo-form input {
     flex: 1;
     padding: 1.5vh 1vw;
-    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    font-size: clamp(1rem,2.2vw,1.2rem);
     background: var(--input-bg);
     border: 2px solid var(--text-primary);
     color: var(--text-primary);
     border-radius: 0.5vh;
     font-family: 'Orbitron', sans-serif;
   }
-  
   .orden-opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 1vw; margin: 2vh 0; }
-  
+
+  /* ============ FIXTURE CENTRADO ============ */
   .fixture-contenido {
     flex: 1;
-    overflow-x: auto;
-    overflow-y: auto;
+    overflow: auto;
     padding: 2vh 2vw;
     background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
   }
-  
   .fixture-header-info {
+    flex: 0 0 auto;
+    width: 100%; max-width: 900px;
+    margin: 0 auto;
     text-align: center;
-    margin-bottom: 2vh;
     padding-bottom: 1.5vh;
     border-bottom: 2px solid var(--border-color);
   }
-  
   .fixture-header-info h2 {
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    font-size: clamp(1.2rem,3vw,1.8rem);
     color: var(--color-amarillo);
     text-transform: uppercase;
     letter-spacing: 0.15em;
     margin-bottom: 0.5vh;
   }
-  
-  .fixture-header-info .subtitulo {
-    font-size: clamp(0.75rem, 1.6vw, 0.95rem);
-    color: var(--text-secondary);
-  }
-  
+  .fixture-header-info .subtitulo { font-size: clamp(0.75rem,1.6vw,0.95rem); color: var(--text-secondary); }
+
   .bracket-wrapper {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     min-width: 100%;
     padding: 2vh 1vw;
-    gap: 0;
+    margin-top: auto;      /* centrado vertical seguro */
+    margin-bottom: auto;
   }
-  
+  .bracket-wrapper > :first-child { margin-left: auto; }   /* centrado horizontal seguro */
+  .bracket-wrapper > :last-child { margin-right: auto; }
+
   .bracket-columna {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: flex; flex-direction: column; justify-content: center;
     min-width: clamp(130px, 20vw, 190px);
     padding: 0 0.5vw;
   }
-  
   .bracket-columna-titulo {
     text-align: center;
-    font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+    font-size: clamp(0.65rem,1.3vw,0.85rem);
     color: var(--color-amarillo);
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -335,328 +328,240 @@
     padding-bottom: 0.8vh;
     border-bottom: 2px solid var(--border-color);
   }
-  
-  .bracket-partidos {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2vh;
-    flex: 1;
-    justify-content: space-around;
-  }
-  
+  .bracket-partidos { display: flex; flex-direction: column; gap: 1.2vh; flex: 1; justify-content: space-around; }
   .bracket-partido {
     background: var(--bg-tertiary);
     border: 2px solid var(--border-color);
     border-radius: 0.8vh;
     padding: 0.8vh 0.6vw;
-    transition: all 0.3s;
     min-height: 7vh;
   }
-  
   .bracket-partido.en-curso {
     border-color: var(--color-verde);
-    background: rgba(0, 255, 0, 0.1);
+    background: rgba(0,255,0,0.1);
     box-shadow: 0 0 15px var(--shadow-glow);
     animation: pulsoFixture 2s infinite;
   }
-  
-  .bracket-partido.terminado { border-color: var(--color-azul); background: rgba(0, 136, 255, 0.1); }
-  .bracket-partido.esquivo { border-color: var(--color-morado); background: rgba(255, 0, 255, 0.05); }
+  .bracket-partido.terminado { border-color: var(--color-azul); background: rgba(0,136,255,0.1); }
+  .bracket-partido.esquivo { border-color: var(--color-morado); background: rgba(255,0,255,0.05); }
   .bracket-partido.pendiente { border-color: var(--border-color); opacity: 0.7; }
-  
-  @keyframes pulsoFixture {
-    0%, 100% { box-shadow: 0 0 15px var(--shadow-glow); }
-    50% { box-shadow: 0 0 25px var(--shadow-glow); }
-  }
-  
-  .bracket-partido-numero {
-    font-size: clamp(0.55rem, 1.1vw, 0.7rem);
-    color: var(--text-secondary);
-    text-align: center;
-    margin-bottom: 0.4vh;
-    text-transform: uppercase;
-  }
-  
-  .bracket-partido-hora {
-    font-size: clamp(0.5rem, 1vw, 0.65rem);
-    color: var(--color-azul);
-    text-align: center;
-    margin-bottom: 0.4vh;
-    font-weight: 500;
-  }
-  
+  @keyframes pulsoFixture { 0%,100%{box-shadow:0 0 15px var(--shadow-glow);} 50%{box-shadow:0 0 25px var(--shadow-glow);} }
+  .bracket-partido-numero { font-size: clamp(0.55rem,1.1vw,0.7rem); color: var(--text-secondary); text-align: center; margin-bottom: 0.4vh; text-transform: uppercase; }
+  .bracket-partido-hora { font-size: clamp(0.5rem,1vw,0.65rem); color: var(--color-azul); text-align: center; margin-bottom: 0.4vh; font-weight: 500; }
   .bracket-equipo {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.4vh 0.3vw;
-    margin: 0.3vh 0;
-    background: rgba(0, 0, 0, 0.4);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.4vh 0.3vw; margin: 0.3vh 0;
+    background: rgba(0,0,0,0.4);
     border-radius: 0.4vh;
-    font-size: clamp(0.65rem, 1.3vw, 0.8rem);
+    font-size: clamp(0.65rem,1.3vw,0.8rem);
     border-left: 3px solid transparent;
   }
-  
-  [data-theme="light"] .bracket-equipo { background: rgba(255, 255, 255, 0.6); }
-  
-  .bracket-equipo.ganador { background: rgba(0, 255, 0, 0.15); border-left-color: var(--color-verde); }
+  [data-theme="light"] .bracket-equipo { background: rgba(255,255,255,0.6); }
+  .bracket-equipo.ganador { background: rgba(0,255,0,0.15); border-left-color: var(--color-verde); }
   .bracket-equipo.por-definir { background: var(--bg-tertiary); border-left-color: var(--text-muted); border-style: dashed; }
-  
-  .bracket-equipo-nombre {
-    flex: 1; color: var(--text-primary); font-weight: 500;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 0.3vw;
-  }
+  .bracket-equipo-nombre { flex: 1; color: var(--text-primary); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 0.3vw; }
   .bracket-equipo.ganador .bracket-equipo-nombre { font-weight: 700; color: var(--color-verde); }
   .bracket-equipo.por-definir .bracket-equipo-nombre { color: var(--text-secondary); font-style: italic; }
-  
-  .bracket-equipo-goles {
-    font-size: clamp(0.85rem, 1.8vw, 1.05rem);
-    font-weight: 900; color: var(--text-primary); min-width: 22px; text-align: right;
-  }
+  .bracket-equipo-goles { font-size: clamp(0.85rem,1.8vw,1.05rem); font-weight: 900; color: var(--text-primary); min-width: 22px; text-align: right; }
   .bracket-equipo.ganador .bracket-equipo-goles { color: var(--color-verde); }
   .bracket-equipo.por-definir .bracket-equipo-goles { color: var(--text-muted); }
-  
-  .bracket-conector {
-    display: flex; align-items: center; justify-content: center;
-    width: clamp(25px, 3.5vw, 45px);
-    color: var(--text-muted); font-size: clamp(1rem, 2vw, 1.5rem); font-weight: 900; flex-shrink: 0;
-  }
-  
-  .bracket-campeon {
-    min-width: clamp(110px, 16vw, 170px);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2vh 1vw;
-  }
-  
-  .bracket-campeon-trofeo { font-size: clamp(2.5rem, 7vw, 4.5rem); margin-bottom: 1vh; }
-  .bracket-campeon-label {
-    font-size: clamp(0.65rem, 1.3vw, 0.85rem); color: var(--color-amarillo);
-    text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1vh; text-align: center;
-  }
-  .bracket-campeon-nombre {
-    font-size: clamp(0.85rem, 1.8vw, 1.1rem); color: var(--color-verde); font-weight: 900;
-    text-align: center; text-shadow: 0 0 10px var(--color-verde); word-break: break-word;
-  }
+  .bracket-conector { display: flex; align-items: center; justify-content: center; width: clamp(25px,3.5vw,45px); color: var(--text-muted); font-size: clamp(1rem,2vw,1.5rem); font-weight: 900; flex-shrink: 0; }
+  .bracket-campeon { min-width: clamp(110px,16vw,170px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2vh 1vw; }
+  .bracket-campeon-trofeo { font-size: clamp(2.5rem,7vw,4.5rem); margin-bottom: 1vh; }
+  .bracket-campeon-label { font-size: clamp(0.65rem,1.3vw,0.85rem); color: var(--color-amarillo); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1vh; text-align: center; }
+  .bracket-campeon-nombre { font-size: clamp(0.85rem,1.8vw,1.1rem); color: var(--color-verde); font-weight: 900; text-align: center; text-shadow: 0 0 10px var(--color-verde); word-break: break-word; }
   .bracket-campeon-nombre.vacio { color: var(--text-muted); text-shadow: none; font-style: italic; }
-  
+
   .fixture-acciones {
-    display: flex; justify-content: center; gap: 1vw; padding: 1.5vh 2vw;
-    border-top: 2px solid var(--border-color); background: var(--bg-primary); flex-wrap: wrap;
+    flex: 0 0 auto;
+    display: flex; justify-content: center; gap: 1vw;
+    padding: 1.5vh 2vw;
+    border-top: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    flex-wrap: wrap;
   }
-  
   .fixture-leyenda {
+    flex: 0 0 auto;
     display: flex; flex-wrap: wrap; gap: 1vw; justify-content: center;
-    padding: 1.5vh; background: var(--bg-tertiary); border-radius: 0.5vh; margin-top: 2vh;
+    padding: 1.5vh;
+    background: var(--bg-tertiary);
+    border-radius: 0.5vh;
+    margin: 0 auto 1vh;
   }
-  
-  .leyenda-item { display: flex; align-items: center; gap: 0.5vw; font-size: clamp(0.65rem, 1.3vw, 0.8rem); color: var(--text-secondary); }
+  .leyenda-item { display: flex; align-items: center; gap: 0.5vw; font-size: clamp(0.65rem,1.3vw,0.8rem); color: var(--text-secondary); }
   .leyenda-color { width: 13px; height: 13px; border-radius: 0.3vh; border: 2px solid; }
   .leyenda-color.pendiente { border-color: var(--border-color); background: var(--bg-tertiary); }
-  .leyenda-color.curso { border-color: var(--color-verde); background: rgba(0, 255, 0, 0.1); }
-  .leyenda-color.terminado { border-color: var(--color-azul); background: rgba(0, 136, 255, 0.1); }
-  .leyenda-color.esquivo { border-color: var(--color-morado); background: rgba(255, 0, 255, 0.05); }
-  .leyenda-color.campeon { border-color: var(--color-amarillo); background: rgba(255, 204, 0, 0.15); }
-  
-  .marcador-contenido {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1vh 1vw;
-    overflow-y: auto;
-  }
-  
+  .leyenda-color.curso { border-color: var(--color-verde); background: rgba(0,255,0,0.1); }
+  .leyenda-color.terminado { border-color: var(--color-azul); background: rgba(0,136,255,0.1); }
+  .leyenda-color.esquivo { border-color: var(--color-morado); background: rgba(255,0,255,0.05); }
+  .leyenda-color.campeon { border-color: var(--color-amarillo); background: rgba(255,204,0,0.15); }
+
+  /* ============ MARCADOR ============ */
   .equipos-enfrentamiento {
     display: flex; justify-content: space-around; align-items: center;
-    width: 100%; margin-bottom: 1vh; gap: 2vw;
+    width: 100%; max-width: 800px;
+    margin: 0 auto 1vh;
+    gap: 2vw;
   }
-  
   .equipo-marcador { flex: 1; text-align: center; padding: 1vh 0.5vw; }
-  .equipo-marcador .nombre {
-    font-size: clamp(0.8rem, 2vw, 1.2rem); color: var(--text-primary);
-    margin-bottom: 0.5vh; font-weight: 700; text-transform: uppercase;
-  }
-  .equipo-marcador .goles {
-    font-size: clamp(3rem, 12vw, 7rem); font-weight: 900; color: var(--color-verde); line-height: 1;
-  }
-  
-  .vs { font-size: clamp(1.5rem, 4vw, 2.5rem); color: var(--text-muted); font-weight: 700; }
-  
+  .equipo-marcador .nombre { font-size: clamp(0.8rem,2vw,1.2rem); color: var(--text-primary); margin-bottom: 0.5vh; font-weight: 700; text-transform: uppercase; }
+  .equipo-marcador .goles { font-size: clamp(3rem,12vw,7rem); font-weight: 900; color: var(--color-verde); line-height: 1; }
+  .vs { font-size: clamp(1.5rem,4vw,2.5rem); color: var(--text-muted); font-weight: 700; }
+
   .contador-tiempo {
-    width: 100%; text-align: center; margin: 1vh 0; flex: 1;
+    flex: 0 0 auto;
+    width: 100%;
     display: flex; align-items: center; justify-content: center;
+    margin: 1vh 0;
+    text-align: center;
   }
-  
   .tiempo-display {
-    font-family: 'Orbitron', sans-serif;
     font-weight: 900;
     letter-spacing: -0.02em;
     line-height: 1;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     gap: 1vh;
     width: 100%;
   }
-  
   .tiempo-base {
     font-size: clamp(8rem, 40vw, 35rem);
     font-weight: 900;
     letter-spacing: -0.04em;
     color: var(--color-verde);
-    text-align: center;
     line-height: 1;
   }
-  
   .tiempo-extra {
-    font-size: clamp(1.5rem, 5vw, 3rem);
+    font-size: clamp(1.5rem,5vw,3rem);
     font-weight: 700;
     letter-spacing: 0.05em;
     color: var(--color-amarillo);
-    text-align: center;
     line-height: 1;
     opacity: 0.9;
   }
-  
   .tiempo-display.aviso .tiempo-base { color: var(--color-rojo); animation: parpadeo 0.5s infinite; }
   .tiempo-display.empate .tiempo-base { color: var(--color-amarillo); animation: parpadeoEmpate 1s infinite; }
-  
-  @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-  @keyframes parpadeoEmpate { 
-    0%, 100% { opacity: 1; text-shadow: 0 0 20px var(--color-amarillo); } 
-    50% { opacity: 0.7; text-shadow: 0 0 40px var(--color-amarillo); } 
-  }
-  
+  @keyframes parpadeo { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+  @keyframes parpadeoEmpate { 0%,100%{opacity:1;text-shadow:0 0 20px var(--color-amarillo);} 50%{opacity:0.7;text-shadow:0 0 40px var(--color-amarillo);} }
+
   .empate-aviso {
-    background: rgba(255, 204, 0, 0.15);
+    background: rgba(255,204,0,0.15);
     border: 2px solid var(--color-amarillo);
     border-radius: 0.8vh;
     padding: 1vh 2vw;
-    margin: 1vh 0;
+    margin: 1vh auto;
     text-align: center;
-    font-size: clamp(0.8rem, 1.8vw, 1rem);
+    font-size: clamp(0.8rem,1.8vw,1rem);
     color: var(--color-amarillo);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    width: 100%; max-width: 800px;
   }
-  
+
   .controles-goles {
     display: grid; grid-template-columns: 1fr 1fr; gap: 1vw;
-    width: 100%; max-width: 700px; margin: 1vh 0;
+    width: 100%; max-width: 800px;
+    margin: 1vh auto;
   }
-  
   .btn-gol-container { display: flex; flex-direction: column; gap: 0.4vh; }
-  
   .btn-gol {
-    padding: 1vh 0.5vw; font-size: clamp(0.9rem, 2vw, 1.3rem);
+    padding: 1vh 0.5vw; font-size: clamp(0.9rem,2vw,1.3rem);
     border: 3px solid; border-radius: 0.8vh; background: transparent;
     cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: 700;
-    transition: all 0.2s; min-height: 5vh;
+    min-height: 5vh;
   }
   .btn-gol-equipo1 { border-color: var(--color-azul); color: var(--color-azul); }
-  .btn-gol-equipo1:active { background: rgba(0, 136, 255, 0.3); }
+  .btn-gol-equipo1:active { background: rgba(0,136,255,0.3); }
   .btn-gol-equipo2 { border-color: var(--color-rojo); color: var(--color-rojo); }
-  .btn-gol-equipo2:active { background: rgba(255, 0, 0, 0.3); }
-  
+  .btn-gol-equipo2:active { background: rgba(255,0,0,0.3); }
   .btn-quitar-gol {
-    padding: 0.6vh 0.5vw; font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+    padding: 0.6vh 0.5vw; font-size: clamp(0.65rem,1.3vw,0.85rem);
     border: 2px solid var(--text-muted); border-radius: 0.5vh; background: transparent;
     color: var(--text-secondary); cursor: pointer; font-family: 'Orbitron', sans-serif;
     font-weight: 500; min-height: 3.5vh;
   }
-  .btn-quitar-gol:active { background: rgba(128, 128, 128, 0.2); color: var(--text-primary); }
-  
+  .btn-quitar-gol:active { background: rgba(128,128,128,0.2); color: var(--text-primary); }
+
   .historial-goles {
-    width: 100%; max-width: 700px; margin: 1vh 0; padding: 1vh;
+    width: 100%; max-width: 800px;
+    margin: 1vh auto; padding: 1vh;
     background: var(--bg-tertiary); border: 1px solid var(--border-color);
     border-radius: 0.5vh; max-height: 12vh; overflow-y: auto;
   }
-  
-  .historial-goles-titulo {
-    font-size: clamp(0.65rem, 1.3vw, 0.85rem); color: var(--text-secondary);
-    text-transform: uppercase; margin-bottom: 0.5vh; text-align: center;
-  }
-  
-  .gol-item {
-    display: flex; justify-content: space-between; padding: 0.4vh 0.5vw;
-    font-size: clamp(0.7rem, 1.4vw, 0.9rem); border-bottom: 1px solid var(--border-color);
-  }
+  .historial-goles-titulo { font-size: clamp(0.65rem,1.3vw,0.85rem); color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5vh; text-align: center; }
+  .gol-item { display: flex; justify-content: space-between; padding: 0.4vh 0.5vw; font-size: clamp(0.7rem,1.4vw,0.9rem); border-bottom: 1px solid var(--border-color); }
   .gol-item:last-child { border-bottom: none; }
   .gol-item .minuto { color: var(--color-amarillo); font-weight: 700; min-width: 45px; }
   .gol-item .equipo-gol { color: var(--text-primary); flex: 1; }
   .gol-item .equipo-gol.eq1 { color: var(--color-azul); }
   .gol-item .equipo-gol.eq2 { color: var(--color-rojo); }
-  
+
   .controles-partido {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8vw;
-    width: 100%; max-width: 700px; padding-top: 1vh;
+    width: 100%; max-width: 800px;
+    margin: 0 auto;
+    padding-top: 1vh;
   }
-  
-  .espera-contenido {
-    flex: 1; display: flex; flex-direction: column;
-    justify-content: center; align-items: center; padding: 4vh 4vw;
-  }
-  .espera-titulo { font-size: clamp(1.2rem, 3vw, 1.8rem); color: var(--color-amarillo); margin-bottom: 2vh; text-align: center; }
-  .espera-tiempo { font-size: clamp(4rem, 15vw, 8rem); color: var(--color-azul); margin-bottom: 3vh; font-weight: 900; }
-  .espera-info { text-align: center; margin-bottom: 3vh; font-size: clamp(0.85rem, 2vw, 1.1rem); }
+
+  /* ============ ESPERA ============ */
+  .espera-titulo { font-size: clamp(1.2rem,3vw,1.8rem); color: var(--color-amarillo); margin-bottom: 2vh; text-align: center; }
+  .espera-tiempo { font-size: clamp(4rem,15vw,8rem); color: var(--color-azul); margin-bottom: 3vh; font-weight: 900; text-align: center; }
+  .espera-info { text-align: center; margin-bottom: 3vh; font-size: clamp(0.85rem,2vw,1.1rem); }
   .espera-info .linea { margin: 1vh 0; color: var(--text-primary); }
   .espera-info .destacado-verde { color: var(--color-verde); font-weight: 700; }
   .espera-info .destacado-amarillo { color: var(--color-amarillo); font-weight: 700; }
-  
+
+  /* ============ HISTORIAL ============ */
   .partido-historial {
     padding: 1.5vh 1vw; margin-bottom: 1.5vh;
     background: var(--bg-tertiary); border-left: 4px solid var(--border-color); border-radius: 0 0.5vh 0.5vh 0;
   }
   .partido-historial.esquivo { border-left-color: var(--color-morado); }
   .partido-historial .info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5vh; flex-wrap: wrap; gap: 0.5vh; }
-  .partido-historial .numero { font-size: clamp(0.75rem, 1.8vw, 0.95rem); color: var(--text-secondary); }
-  .partido-historial .tipo { font-size: clamp(0.65rem, 1.3vw, 0.8rem); color: var(--color-morado); text-transform: uppercase; }
-  .partido-historial .horario { font-size: clamp(0.65rem, 1.3vw, 0.8rem); color: var(--color-azul); }
-  .partido-historial .resultado { font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-primary); font-weight: 700; }
-  .partido-historial .ganador { color: var(--color-verde); font-size: clamp(0.8rem, 1.8vw, 1rem); }
-  
-  .campeon-contenido {
-    flex: 1; display: flex; flex-direction: column;
-    justify-content: center; align-items: center; padding: 4vh 4vw; text-align: center;
-  }
-  .campeon-titulo { font-size: clamp(1.2rem, 3vw, 1.8rem); color: var(--color-amarillo); margin-bottom: 2vh; text-transform: uppercase; }
+  .partido-historial .numero { font-size: clamp(0.75rem,1.8vw,0.95rem); color: var(--text-secondary); }
+  .partido-historial .tipo { font-size: clamp(0.65rem,1.3vw,0.8rem); color: var(--color-morado); text-transform: uppercase; }
+  .partido-historial .horario { font-size: clamp(0.65rem,1.3vw,0.8rem); color: var(--color-azul); }
+  .partido-historial .resultado { font-size: clamp(0.9rem,2vw,1.1rem); color: var(--text-primary); font-weight: 700; }
+  .partido-historial .ganador { color: var(--color-verde); font-size: clamp(0.8rem,1.8vw,1rem); }
+
+  /* ============ CAMPEÓN ============ */
+  .campeon-titulo { font-size: clamp(1.2rem,3vw,1.8rem); color: var(--color-amarillo); margin-bottom: 2vh; text-transform: uppercase; text-align: center; }
   .campeon-nombre {
-    font-size: clamp(2rem, 7vw, 4rem); color: var(--color-verde); font-weight: 900;
+    font-size: clamp(2rem,7vw,4rem); color: var(--color-verde); font-weight: 900;
     margin-bottom: 2vh; text-shadow: 0 0 30px var(--color-verde); animation: brillo 2s infinite;
+    text-align: center;
   }
-  @keyframes brillo {
-    0%, 100% { text-shadow: 0 0 30px var(--color-verde); }
-    50% { text-shadow: 0 0 50px var(--color-verde), 0 0 70px var(--color-verde); }
-  }
-  .campeon-estadisticas { margin: 2vh 0; font-size: clamp(0.85rem, 2vw, 1.1rem); color: var(--text-primary); }
+  @keyframes brillo { 0%,100%{text-shadow:0 0 30px var(--color-verde);} 50%{text-shadow:0 0 50px var(--color-verde),0 0 70px var(--color-verde);} }
+  .campeon-estadisticas { margin: 2vh 0; font-size: clamp(0.85rem,2vw,1.1rem); color: var(--text-primary); text-align: center; }
   .campeon-estadisticas div { margin: 0.8vh 0; }
-  
+
+  /* ============ MODALES ============ */
   .modal-empate-contenido { text-align: center; }
-  .modal-empate-titulo { font-size: clamp(1.3rem, 3vw, 2rem); color: var(--color-amarillo); margin-bottom: 2vh; text-transform: uppercase; letter-spacing: 0.1em; }
-  .modal-empate-info { font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-primary); margin-bottom: 2vh; line-height: 1.5; }
+  .modal-empate-titulo { font-size: clamp(1.3rem,3vw,2rem); color: var(--color-amarillo); margin-bottom: 2vh; text-transform: uppercase; letter-spacing: 0.1em; }
+  .modal-empate-info { font-size: clamp(0.9rem,2vw,1.1rem); color: var(--text-primary); margin-bottom: 2vh; line-height: 1.5; }
   .modal-empate-marcador {
     display: flex; justify-content: center; align-items: center; gap: 2vw;
-    margin: 2vh 0; padding: 2vh; background: rgba(255, 204, 0, 0.1);
+    margin: 2vh 0; padding: 2vh; background: rgba(255,204,0,0.1);
     border: 2px solid var(--color-amarillo); border-radius: 1vh;
   }
   .modal-empate-equipo { text-align: center; flex: 1; }
-  .modal-empate-equipo .nombre { font-size: clamp(0.8rem, 1.8vw, 1rem); color: var(--text-primary); margin-bottom: 0.5vh; }
-  .modal-empate-equipo .goles { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 900; color: var(--color-amarillo); }
-  .modal-empate-vs { font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-muted); font-weight: 700; }
+  .modal-empate-equipo .nombre { font-size: clamp(0.8rem,1.8vw,1rem); color: var(--text-primary); margin-bottom: 0.5vh; }
+  .modal-empate-equipo .goles { font-size: clamp(2rem,6vw,3.5rem); font-weight: 900; color: var(--color-amarillo); }
+  .modal-empate-vs { font-size: clamp(1.5rem,3vw,2rem); color: var(--text-muted); font-weight: 700; }
   .modal-empate-config { margin: 2vh 0; padding: 1.5vh; background: var(--bg-tertiary); border-radius: 0.8vh; }
-  .modal-empate-config label { display: block; font-size: clamp(0.8rem, 1.8vw, 1rem); color: var(--color-amarillo); margin-bottom: 1vh; }
+  .modal-empate-config label { display: block; font-size: clamp(0.8rem,1.8vw,1rem); color: var(--color-amarillo); margin-bottom: 1vh; }
   .modal-empate-config input {
-    width: 100%; padding: 1vh; font-size: clamp(1.5rem, 4vw, 2rem); text-align: center;
+    width: 100%; padding: 1vh; font-size: clamp(1.5rem,4vw,2rem); text-align: center;
     background: transparent; color: var(--color-amarillo); border: 2px solid var(--color-amarillo);
     border-radius: 0.5vh; font-family: 'Orbitron', sans-serif; font-weight: 700;
   }
   .modal-empate-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 1vw; margin-top: 2vh; }
-  
+
   .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--overlay-bg); z-index: 1000; justify-content: center; align-items: center;
+    background: var(--overlay-bg); z-index: 1000;
+    justify-content: center; align-items: center;
     padding: calc(2vh + env(safe-area-inset-top)) calc(2vw + env(safe-area-inset-right)) calc(2vh + env(safe-area-inset-bottom)) calc(2vw + env(safe-area-inset-left));
   }
   .modal-overlay.activo { display: flex; }
@@ -664,38 +569,38 @@
     background: var(--bg-primary); border: 2px solid var(--text-primary);
     padding: 3vh 3vw; max-width: 90vw; width: 100%; max-height: 90vh; overflow-y: auto;
   }
-  .modal h2 { text-align: center; color: var(--text-primary); margin-bottom: 2vh; font-size: clamp(1rem, 2.5vw, 1.4rem); }
+  .modal h2 { text-align: center; color: var(--text-primary); margin-bottom: 2vh; font-size: clamp(1rem,2.5vw,1.4rem); }
   .modal-opciones { display: flex; flex-direction: column; gap: 1.5vh; margin: 2vh 0; }
   .modal-opcion {
     display: flex; align-items: center; gap: 1vw; padding: 1.5vh 1.5vw;
     background: transparent; border: 1px solid var(--text-primary); border-radius: 0.5vh;
-    cursor: pointer; transition: all 0.2s;
-    color: var(--text-primary);
+    cursor: pointer; color: var(--text-primary);
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(0.85rem, 1.8vw, 1rem);
+    font-size: clamp(0.85rem,1.8vw,1rem);
     text-align: center;
   }
-  .modal-opcion:active { background: rgba(128, 128, 128, 0.1); }
+  .modal-opcion:active { background: rgba(128,128,128,0.1); }
   .modal-opcion label { cursor: pointer; flex: 1; color: var(--text-primary); line-height: 1.4; }
-  
+
+  /* ============ RESPONSIVE ============ */
   @media (orientation: landscape) and (max-height: 500px) {
     .header { height: 7vh; min-height: 45px; padding: 0.5vh 1.5vw; }
     .btn-icono { width: 6vh; height: 6vh; min-width: 40px; min-height: 40px; }
-    .hora-actual { font-size: clamp(0.7rem, 1.5vw, 1rem); }
-    .titulo-header { font-size: clamp(0.7rem, 1.5vw, 1rem); }
-    .tiempo-base { font-size: clamp(6rem, 30vh, 20rem); }
-    .tiempo-extra { font-size: clamp(1.2rem, 4vh, 2rem); }
+    .hora-actual { font-size: clamp(0.7rem,1.5vw,1rem); }
+    .titulo-header { font-size: clamp(0.7rem,1.5vw,1rem); }
+    .tiempo-base { font-size: clamp(6rem,30vh,20rem); }
+    .tiempo-extra { font-size: clamp(1.2rem,4vh,2rem); }
     .historial-goles { max-height: 8vh; }
-    .btn { min-height: 4vh; font-size: clamp(0.65rem, 1.3vw, 0.9rem); padding: 0.5vh 0.5vw; }
+    .btn { min-height: 4vh; font-size: clamp(0.65rem,1.3vw,0.9rem); padding: 0.5vh 0.5vw; }
     .btn-mega { min-height: 6vh; }
-    .btn-gol { min-height: 4vh; font-size: clamp(0.8rem, 1.5vw, 1.1rem); }
-    .btn-quitar-gol { min-height: 3vh; font-size: clamp(0.6rem, 1.1vw, 0.75rem); }
+    .btn-gol { min-height: 4vh; font-size: clamp(0.8rem,1.5vw,1.1rem); }
+    .btn-quitar-gol { min-height: 3vh; font-size: clamp(0.6rem,1.1vw,0.75rem); }
   }
-  
+
   @media (max-width: 480px) and (orientation: portrait) {
-    .tiempo-base { font-size: clamp(6rem, 25vw, 15rem); }
-    .tiempo-extra { font-size: clamp(1.2rem, 4vw, 2rem); }
-    .equipo-marcador .goles { font-size: clamp(2rem, 8vw, 4rem); }
+    .tiempo-base { font-size: clamp(6rem,25vw,15rem); }
+    .tiempo-extra { font-size: clamp(1.2rem,4vw,2rem); }
+    .equipo-marcador .goles { font-size: clamp(2rem,8vw,4rem); }
     .bracket-columna { min-width: 120px; }
   }
 </style>
