@@ -603,6 +603,17 @@
     .equipo-marcador .goles { font-size: clamp(2rem,8vw,4rem); }
     .bracket-columna { min-width: 120px; }
   }
+    /* Video invisible de respaldo para Wake Lock (NO debe ocupar espacio) */
+  #video-fallback {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+  }
 </style>
 </head>
 <body>
