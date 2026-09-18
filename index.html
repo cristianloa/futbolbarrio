@@ -2,10 +2,19 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Marcador digital y gestión de torneos de fútbol Rey de la Cancha">
+<meta name="theme-color" content="#000000">
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon.svg">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Torneo">
+
 <title>Torneo Rey de la Cancha</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -61,19 +70,29 @@
     transition: background 0.3s, color 0.3s;
   }
   
-  body { display: flex; justify-content: center; align-items: center; }
+  body {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
   
+  /* ÁREA SEGURA: navegador + app instalada (notch, barras) */
   .pantalla {
     display: none;
-    width: 100vw; height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     background: var(--bg-primary);
     position: relative;
     flex-direction: column;
+    padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
   }
   
   .pantalla.activa { display: flex; }
   
-  /* ============ HEADER ============ */
   .header {
     display: flex;
     justify-content: space-between;
@@ -90,7 +109,6 @@
   .hora-actual {
     font-size: clamp(0.9rem, 2vw, 1.3rem);
     color: var(--color-amarillo);
-    font-family: 'Orbitron', sans-serif;
     font-weight: 500;
     letter-spacing: 0.05em;
     white-space: nowrap;
@@ -124,16 +142,11 @@
     transition: all 0.2s;
     font-family: 'Orbitron', sans-serif;
     position: relative;
-    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.3);
   }
   
-  .btn-icono:hover { background: rgba(128, 128, 128, 0.2); }
   .btn-icono:active { transform: scale(0.9); background: rgba(128, 128, 128, 0.3); }
   
-  .btn-icono.wakelock-activo {
-    border-color: var(--color-verde);
-    color: var(--color-verde);
-  }
+  .btn-icono.wakelock-activo { border-color: var(--color-verde); color: var(--color-verde); }
   
   .btn-icono.wakelock-activo::after {
     content: '';
@@ -157,7 +170,8 @@
     display: flex; flex-direction: column;
     justify-content: center; align-items: center;
     padding: 4vh 4vw;
-    gap: 3vh;
+    gap: 2.5vh;
+    overflow-y: auto;
   }
   
   .config-contenido h1 {
@@ -188,7 +202,6 @@
     letter-spacing: -0.02em;
   }
   
-  /* ============ BOTONES ============ */
   .btn {
     border: 2px solid var(--text-primary);
     border-radius: 0.4vh;
@@ -267,7 +280,6 @@
   
   .orden-opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 1vw; margin: 2vh 0; }
   
-  /* ============ BRACKET FIXTURE ============ */
   .fixture-contenido {
     flex: 1;
     overflow-x: auto;
@@ -310,7 +322,6 @@
     justify-content: center;
     min-width: clamp(130px, 20vw, 190px);
     padding: 0 0.5vw;
-    position: relative;
   }
   
   .bracket-columna-titulo {
@@ -338,7 +349,6 @@
     border: 2px solid var(--border-color);
     border-radius: 0.8vh;
     padding: 0.8vh 0.6vw;
-    position: relative;
     transition: all 0.3s;
     min-height: 7vh;
   }
@@ -353,11 +363,6 @@
   .bracket-partido.terminado { border-color: var(--color-azul); background: rgba(0, 136, 255, 0.1); }
   .bracket-partido.esquivo { border-color: var(--color-morado); background: rgba(255, 0, 255, 0.05); }
   .bracket-partido.pendiente { border-color: var(--border-color); opacity: 0.7; }
-  .bracket-partido.campeon-partido {
-    border-color: var(--color-amarillo);
-    background: rgba(255, 204, 0, 0.15);
-    box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
-  }
   
   @keyframes pulsoFixture {
     0%, 100% { box-shadow: 0 0 15px var(--shadow-glow); }
@@ -370,7 +375,6 @@
     text-align: center;
     margin-bottom: 0.4vh;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
   }
   
   .bracket-partido-hora {
@@ -452,7 +456,6 @@
   .leyenda-color.esquivo { border-color: var(--color-morado); background: rgba(255, 0, 255, 0.05); }
   .leyenda-color.campeon { border-color: var(--color-amarillo); background: rgba(255, 204, 0, 0.15); }
   
-  /* ============ MARCADOR (Estilo Gigante) ============ */
   .marcador-contenido {
     flex: 1;
     display: flex;
@@ -483,7 +486,6 @@
     display: flex; align-items: center; justify-content: center;
   }
   
-  /* ESTILO GIGANTE DEL CONTADOR */
   .tiempo-display {
     font-family: 'Orbitron', sans-serif;
     font-weight: 900;
@@ -491,9 +493,10 @@
     line-height: 1;
     text-align: center;
     display: flex;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 0.05em;
+    gap: 1vh;
     width: 100%;
   }
   
@@ -503,14 +506,17 @@
     letter-spacing: -0.04em;
     color: var(--color-verde);
     text-align: center;
+    line-height: 1;
   }
   
   .tiempo-extra {
-    font-size: clamp(3rem, 15vw, 12rem);
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
     color: var(--color-amarillo);
-    margin-left: 0.1em;
+    text-align: center;
+    line-height: 1;
+    opacity: 0.9;
   }
   
   .tiempo-display.aviso .tiempo-base { color: var(--color-rojo); animation: parpadeo 0.5s infinite; }
@@ -588,7 +594,6 @@
     width: 100%; max-width: 700px; padding-top: 1vh;
   }
   
-  /* ============ ESPERA ============ */
   .espera-contenido {
     flex: 1; display: flex; flex-direction: column;
     justify-content: center; align-items: center; padding: 4vh 4vw;
@@ -600,7 +605,6 @@
   .espera-info .destacado-verde { color: var(--color-verde); font-weight: 700; }
   .espera-info .destacado-amarillo { color: var(--color-amarillo); font-weight: 700; }
   
-  /* ============ HISTORIAL ============ */
   .partido-historial {
     padding: 1.5vh 1vw; margin-bottom: 1.5vh;
     background: var(--bg-tertiary); border-left: 4px solid var(--border-color); border-radius: 0 0.5vh 0.5vh 0;
@@ -613,7 +617,6 @@
   .partido-historial .resultado { font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-primary); font-weight: 700; }
   .partido-historial .ganador { color: var(--color-verde); font-size: clamp(0.8rem, 1.8vw, 1rem); }
   
-  /* ============ CAMPEÓN ============ */
   .campeon-contenido {
     flex: 1; display: flex; flex-direction: column;
     justify-content: center; align-items: center; padding: 4vh 4vw; text-align: center;
@@ -630,7 +633,6 @@
   .campeon-estadisticas { margin: 2vh 0; font-size: clamp(0.85rem, 2vw, 1.1rem); color: var(--text-primary); }
   .campeon-estadisticas div { margin: 0.8vh 0; }
   
-  /* ============ MODAL EMPATE ============ */
   .modal-empate-contenido { text-align: center; }
   .modal-empate-titulo { font-size: clamp(1.3rem, 3vw, 2rem); color: var(--color-amarillo); margin-bottom: 2vh; text-transform: uppercase; letter-spacing: 0.1em; }
   .modal-empate-info { font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-primary); margin-bottom: 2vh; line-height: 1.5; }
@@ -652,10 +654,10 @@
   }
   .modal-empate-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 1vw; margin-top: 2vh; }
   
-  /* ============ MODAL GENERAL ============ */
   .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--overlay-bg); z-index: 1000; justify-content: center; align-items: center; padding: 2vh 2vw;
+    background: var(--overlay-bg); z-index: 1000; justify-content: center; align-items: center;
+    padding: calc(2vh + env(safe-area-inset-top)) calc(2vw + env(safe-area-inset-right)) calc(2vh + env(safe-area-inset-bottom)) calc(2vw + env(safe-area-inset-left));
   }
   .modal-overlay.activo { display: flex; }
   .modal {
@@ -663,34 +665,26 @@
     padding: 3vh 3vw; max-width: 90vw; width: 100%; max-height: 90vh; overflow-y: auto;
   }
   .modal h2 { text-align: center; color: var(--text-primary); margin-bottom: 2vh; font-size: clamp(1rem, 2.5vw, 1.4rem); }
-  .modal .aviso {
-    background: transparent; border: 1px solid var(--text-primary); padding: 1.5vh 1.5vw;
-    margin-bottom: 2vh; font-size: clamp(0.75rem, 1.8vw, 0.95rem); color: var(--text-primary);
-    text-align: center; font-family: 'Orbitron', sans-serif; font-weight: 400;
-  }
-  .modal .aviso.peligro { border-color: var(--color-rojo); color: var(--color-rojo); }
-  .modal .aviso.info { border-color: var(--color-azul); color: var(--color-azul); }
   .modal-opciones { display: flex; flex-direction: column; gap: 1.5vh; margin: 2vh 0; }
   .modal-opcion {
     display: flex; align-items: center; gap: 1vw; padding: 1.5vh 1.5vw;
     background: transparent; border: 1px solid var(--text-primary); border-radius: 0.5vh;
     cursor: pointer; transition: all 0.2s;
+    color: var(--text-primary);
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(0.85rem, 1.8vw, 1rem);
+    text-align: center;
   }
-  .modal-opcion:hover { background: rgba(128, 128, 128, 0.1); }
-  .modal-opcion input[type="radio"] { width: 2vh; height: 2vh; cursor: pointer; accent-color: var(--text-primary); }
-  .modal-opcion label { cursor: pointer; flex: 1; color: var(--text-primary); }
-  .modal-opcion .titulo-opcion { font-size: clamp(0.85rem, 1.8vw, 1rem); margin-bottom: 0.5vh; font-family: 'Orbitron', sans-serif; font-weight: 500; }
-  .modal-opcion .descripcion-opcion { font-size: clamp(0.65rem, 1.3vw, 0.8rem); color: var(--text-secondary); font-family: 'Orbitron', sans-serif; font-weight: 400; }
-  .modal-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 1vw; margin-top: 2vh; }
+  .modal-opcion:active { background: rgba(128, 128, 128, 0.1); }
+  .modal-opcion label { cursor: pointer; flex: 1; color: var(--text-primary); line-height: 1.4; }
   
-  /* ============ RESPONSIVE ============ */
   @media (orientation: landscape) and (max-height: 500px) {
     .header { height: 7vh; min-height: 45px; padding: 0.5vh 1.5vw; }
     .btn-icono { width: 6vh; height: 6vh; min-width: 40px; min-height: 40px; }
     .hora-actual { font-size: clamp(0.7rem, 1.5vw, 1rem); }
     .titulo-header { font-size: clamp(0.7rem, 1.5vw, 1rem); }
     .tiempo-base { font-size: clamp(6rem, 30vh, 20rem); }
-    .tiempo-extra { font-size: clamp(2rem, 10vh, 7rem); }
+    .tiempo-extra { font-size: clamp(1.2rem, 4vh, 2rem); }
     .historial-goles { max-height: 8vh; }
     .btn { min-height: 4vh; font-size: clamp(0.65rem, 1.3vw, 0.9rem); padding: 0.5vh 0.5vw; }
     .btn-mega { min-height: 6vh; }
@@ -700,7 +694,7 @@
   
   @media (max-width: 480px) and (orientation: portrait) {
     .tiempo-base { font-size: clamp(6rem, 25vw, 15rem); }
-    .tiempo-extra { font-size: clamp(2rem, 10vw, 6rem); }
+    .tiempo-extra { font-size: clamp(1.2rem, 4vw, 2rem); }
     .equipo-marcador .goles { font-size: clamp(2rem, 8vw, 4rem); }
     .bracket-columna { min-width: 120px; }
   }
@@ -708,16 +702,15 @@
 </head>
 <body>
 
-<!-- Video fallback para Wake Lock -->
 <video id="video-fallback" loop muted playsinline>
   <source src="data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAB1tZGF0AAAA" type="video/mp4">
 </video>
 
-<!-- MODAL DE OPCIONES -->
 <div id="modal-opciones" class="modal-overlay">
   <div class="modal">
     <h2>⚙️ OPCIONES</h2>
     <div class="modal-opciones">
+      <div class="modal-opcion" id="opcion-instalar" onclick="instalarApp()" style="display:none;">📲 Instalar App en este dispositivo</div>
       <div class="modal-opcion" onclick="verHistorial()">📋 Ver Historial</div>
       <div class="modal-opcion" onclick="reiniciarTorneo()">🔄 Reiniciar Torneo</div>
       <div class="modal-opcion" onclick="cerrarModal()">✕ Cerrar</div>
@@ -725,7 +718,6 @@
   </div>
 </div>
 
-<!-- MODAL DE EMPATE -->
 <div id="modal-empate" class="modal-overlay">
   <div class="modal">
     <div class="modal-empate-contenido">
@@ -754,34 +746,35 @@
   </div>
 </div>
 
-<!-- MODAL DE PANTALLA ENCENDIDA (WAKE LOCK) -->
 <div id="modal-wakelock" class="modal-overlay">
   <div class="modal">
     <h2>🔒 MANTENER PANTALLA ENCENDIDA</h2>
     <div class="modal-opciones">
       <div class="modal-opcion" onclick="activarWakeLock()">
-        <label>
-          <div class="titulo-opcion">🔒 Activar Bloqueo de Pantalla</div>
-          <div class="descripcion-opcion">La pantalla permanecerá encendida hasta que lo desactives</div>
-        </label>
+        <label>🔒 Activar Bloqueo de Pantalla<br><small>La pantalla permanecerá encendida</small></label>
       </div>
       <div class="modal-opcion" onclick="activarPantallaCompleta()">
-        <label>
-          <div class="titulo-opcion">📺 Pantalla Completa</div>
-          <div class="descripcion-opcion">Oculta la barra del navegador para mayor visibilidad</div>
-        </label>
+        <label>📺 Pantalla Completa<br><small>Oculta la barra del navegador</small></label>
       </div>
       <div class="modal-opcion" onclick="cerrarModalWakeLock()">
-        <label>
-          <div class="titulo-opcion">✕ Cerrar</div>
-          <div class="descripcion-opcion">Volver al marcador</div>
-        </label>
+        <label>✕ Cerrar</label>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PANTALLA 1: CONFIGURACIÓN -->
+<div id="modal-instalar-ios" class="modal-overlay">
+  <div class="modal">
+    <h2>📲 INSTALAR EN iPHONE / iPAD</h2>
+    <div class="modal-opciones">
+      <div class="modal-opcion"><label>1️⃣ En <b>Safari</b>, toca el botón <b>Compartir</b> (cuadrado con flecha hacia arriba)</label></div>
+      <div class="modal-opcion"><label>2️⃣ Desliza y selecciona <b>"Agregar a pantalla de inicio"</b></label></div>
+      <div class="modal-opcion"><label>3️⃣ Toca <b>"Agregar"</b> para confirmar</label></div>
+      <div class="modal-opcion" onclick="cerrarModalIOS()"><label>✕ Entendido</label></div>
+    </div>
+  </div>
+</div>
+
 <div id="pantalla-config" class="pantalla activa">
   <div class="config-contenido">
     <h1>🏆 Torneo Rey de la Cancha</h1>
@@ -791,11 +784,11 @@
       <label>Tiempo de espera entre partidos (minutos):</label>
       <input type="number" id="cfg-espera" value="5" min="1" max="30">
       <button class="btn btn-primary btn-full btn-mega" onclick="iniciarTorneo()">▶ SIGUIENTE</button>
+      <button class="btn btn-info btn-full" id="btn-instalar-config" onclick="instalarApp()" style="display:none;">📲 INSTALAR APP</button>
     </div>
   </div>
 </div>
 
-<!-- PANTALLA 2: GESTIÓN DE EQUIPOS -->
 <div id="pantalla-equipos" class="pantalla">
   <div class="header">
     <div class="hora-actual" id="hora-equipos">00:00:00</div>
@@ -826,7 +819,6 @@
   </div>
 </div>
 
-<!-- PANTALLA 3: FIXTURE/BRACKET -->
 <div id="pantalla-fixture" class="pantalla">
   <div class="header">
     <div class="hora-actual" id="hora-fixture">00:00:00</div>
@@ -861,7 +853,6 @@
   </div>
 </div>
 
-<!-- PANTALLA 4: PARTIDO EN CURSO -->
 <div id="pantalla-partido" class="pantalla">
   <div class="header">
     <div class="hora-actual" id="hora-partido">00:00:00</div>
@@ -915,7 +906,6 @@
   </div>
 </div>
 
-<!-- PANTALLA 5: ESPERA -->
 <div id="pantalla-espera" class="pantalla">
   <div class="header">
     <div class="hora-actual" id="hora-espera">00:00:00</div>
@@ -942,7 +932,6 @@
   </div>
 </div>
 
-<!-- PANTALLA 6: HISTORIAL -->
 <div id="pantalla-historial" class="pantalla">
   <div class="header">
     <div class="hora-actual" id="hora-historial">00:00:00</div>
@@ -958,7 +947,6 @@
   </div>
 </div>
 
-<!-- PANTALLA 7: CAMPEÓN -->
 <div id="pantalla-campeon" class="pantalla">
   <div class="header">
     <div class="hora-actual" id="hora-campeon">00:00:00</div>
@@ -1015,9 +1003,64 @@ let torneoIniciado = false;
 
 let temaActual = localStorage.getItem('tema') || 'dark';
 
-// Wake Lock
 let wakeLockActivo = false;
 let wakeLockSentinel = null;
+
+let deferredPrompt = null;
+
+// ============ PWA / INSTALACIÓN ============
+function esStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function esIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function actualizarBotonesInstalacion() {
+  const mostrar = !esStandalone() && (deferredPrompt !== null || esIOS());
+  const btnConfig = document.getElementById('btn-instalar-config');
+  const opcionModal = document.getElementById('opcion-instalar');
+  if (btnConfig) btnConfig.style.display = mostrar ? 'flex' : 'none';
+  if (opcionModal) opcionModal.style.display = mostrar ? 'flex' : 'none';
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  actualizarBotonesInstalacion();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  actualizarBotonesInstalacion();
+});
+
+function instalarApp() {
+  cerrarModal();
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((res) => {
+      console.log('Instalación:', res.outcome);
+      deferredPrompt = null;
+      actualizarBotonesInstalacion();
+    });
+  } else if (esIOS() && !esStandalone()) {
+    document.getElementById('modal-instalar-ios').classList.add('activo');
+  }
+}
+
+function cerrarModalIOS() {
+  document.getElementById('modal-instalar-ios').classList.remove('activo');
+}
+
+// Service Worker (offline)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.error('SW error:', err));
+  });
+}
 
 // ============ TEMA ============
 function aplicarTema() {
@@ -1026,6 +1069,8 @@ function aplicarTema() {
   document.querySelectorAll('[id^="btn-tema"]').forEach(btn => {
     if (btn) btn.textContent = icono;
   });
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.content = temaActual === 'dark' ? '#000000' : '#f5f5f5';
 }
 
 function toggleTema() {
@@ -1038,8 +1083,7 @@ function toggleTema() {
 function actualizarHoraActual() {
   const ahora = new Date();
   const hora = ahora.toLocaleTimeString('es-ES', { hour12: false });
-  const elementos = ['hora-equipos', 'hora-fixture', 'hora-partido', 'hora-espera', 'hora-historial', 'hora-campeon'];
-  elementos.forEach(id => {
+  ['hora-equipos', 'hora-fixture', 'hora-partido', 'hora-espera', 'hora-historial', 'hora-campeon'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = hora;
   });
@@ -1092,8 +1136,33 @@ function reproducirAviso() {
 
 function reproducirPitidoFinal() {
   if (!audioContext || !sonidoActivado) return;
-  reproducirPitido(1.5, 1500);
-  setTimeout(() => reproducirPitido(1.5, 1500), 500);
+  const osc1 = audioContext.createOscillator();
+  const gain1 = audioContext.createGain();
+  osc1.connect(gain1); gain1.connect(audioContext.destination);
+  osc1.frequency.value = 1800; osc1.type = 'sawtooth';
+  gain1.gain.setValueAtTime(0.5, audioContext.currentTime);
+  gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2.5);
+  osc1.start(audioContext.currentTime); osc1.stop(audioContext.currentTime + 2.5);
+  
+  setTimeout(() => {
+    const osc2 = audioContext.createOscillator();
+    const gain2 = audioContext.createGain();
+    osc2.connect(gain2); gain2.connect(audioContext.destination);
+    osc2.frequency.value = 1500; osc2.type = 'sawtooth';
+    gain2.gain.setValueAtTime(0.6, audioContext.currentTime);
+    gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 3);
+    osc2.start(audioContext.currentTime); osc2.stop(audioContext.currentTime + 3);
+  }, 800);
+  
+  setTimeout(() => {
+    const osc3 = audioContext.createOscillator();
+    const gain3 = audioContext.createGain();
+    osc3.connect(gain3); gain3.connect(audioContext.destination);
+    osc3.frequency.value = 2000; osc3.type = 'sawtooth';
+    gain3.gain.setValueAtTime(0.7, audioContext.currentTime);
+    gain3.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
+    osc3.start(audioContext.currentTime); osc3.stop(audioContext.currentTime + 2);
+  }, 2000);
 }
 
 function reproducirEmpate() {
@@ -1110,7 +1179,6 @@ async function activarWakeLock() {
       wakeLockSentinel = await navigator.wakeLock.request('screen');
       wakeLockActivo = true;
       actualizarIndicadorWakeLock();
-      wakeLockSentinel.addEventListener('release', () => { console.log('Wake Lock liberado'); });
       document.addEventListener('visibilitychange', manejarVisibilidad);
       alert('✓ Pantalla bloqueada. No se apagará automáticamente.');
     } else {
@@ -1118,81 +1186,59 @@ async function activarWakeLock() {
     }
     cerrarModalWakeLock();
   } catch (err) {
-    console.error('Error al activar Wake Lock:', err);
-    alert('⚠ No se pudo activar. Configura manualmente:\n\nAjustes → Pantalla → Tiempo de espera → Nunca');
+    console.error('Error Wake Lock:', err);
+    alert('⚠ No se pudo activar. Configura:\nAjustes → Pantalla → Tiempo de espera → Nunca');
   }
 }
 
 function desactivarWakeLock() {
-  if (wakeLockSentinel) {
-    wakeLockSentinel.release();
-    wakeLockSentinel = null;
-  }
+  if (wakeLockSentinel) { wakeLockSentinel.release(); wakeLockSentinel = null; }
   wakeLockActivo = false;
   actualizarIndicadorWakeLock();
   document.removeEventListener('visibilitychange', manejarVisibilidad);
-  const video = document.getElementById('video-fallback');
-  video.pause();
+  document.getElementById('video-fallback').pause();
 }
 
 async function manejarVisibilidad() {
   if (document.visibilityState === 'visible' && wakeLockActivo) {
     try {
-      if ('wakeLock' in navigator) {
-        wakeLockSentinel = await navigator.wakeLock.request('screen');
-      }
-    } catch (err) {
-      console.error('Error al re-adquirir Wake Lock:', err);
-    }
+      if ('wakeLock' in navigator) wakeLockSentinel = await navigator.wakeLock.request('screen');
+    } catch (err) { console.error(err); }
   }
 }
 
 function activarVideoFallback() {
-  const video = document.getElementById('video-fallback');
-  video.play().then(() => {
+  document.getElementById('video-fallback').play().then(() => {
     wakeLockActivo = true;
     actualizarIndicadorWakeLock();
-    alert('✓ Modo de respaldo activado. La pantalla debería mantenerse encendida.');
+    alert('✓ Modo de respaldo activado.');
   }).catch(err => {
-    console.error('Error con video fallback:', err);
-    alert('⚠ No se pudo activar. Configura manualmente:\n\nAjustes → Pantalla → Tiempo de espera → Nunca');
+    console.error(err);
+    alert('⚠ Configura manualmente el tiempo de pantalla.');
   });
 }
 
 function actualizarIndicadorWakeLock() {
-  const botones = document.querySelectorAll('[id^="btn-wakelock"]');
-  botones.forEach(btn => {
+  document.querySelectorAll('[id^="btn-wakelock"]').forEach(btn => {
     if (wakeLockActivo) {
       btn.classList.add('wakelock-activo');
       btn.textContent = '🔓';
-      btn.title = 'Pantalla bloqueada (tocar para desactivar)';
-      btn.onclick = () => {
-        if (confirm('¿Desactivar bloqueo de pantalla?')) {
-          desactivarWakeLock();
-        }
-      };
+      btn.onclick = () => { if (confirm('¿Desactivar bloqueo de pantalla?')) desactivarWakeLock(); };
     } else {
       btn.classList.remove('wakelock-activo');
       btn.textContent = '🔒';
-      btn.title = 'Mantener pantalla encendida';
       btn.onclick = abrirModalWakeLock;
     }
   });
 }
 
-function abrirModalWakeLock() {
-  document.getElementById('modal-wakelock').classList.add('activo');
-}
-
-function cerrarModalWakeLock() {
-  document.getElementById('modal-wakelock').classList.remove('activo');
-}
+function abrirModalWakeLock() { document.getElementById('modal-wakelock').classList.add('activo'); }
+function cerrarModalWakeLock() { document.getElementById('modal-wakelock').classList.remove('activo'); }
 
 function activarPantallaCompleta() {
   const elem = document.documentElement;
   if (elem.requestFullscreen) elem.requestFullscreen();
   else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-  else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
   cerrarModalWakeLock();
 }
 
@@ -1202,29 +1248,18 @@ function mostrarPantalla(id) {
   document.getElementById(id).classList.add('activa');
 }
 
-function abrirModalOpciones() {
-  document.getElementById('modal-opciones').classList.add('activo');
-}
-
-function cerrarModal() {
-  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('activo'));
-}
+function abrirModalOpciones() { document.getElementById('modal-opciones').classList.add('activo'); }
+function cerrarModal() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('activo')); }
 
 function volverConfig() {
-  if (confirm('¿Volver a configuración? Se perderán los datos.')) {
-    location.reload();
-  }
+  if (confirm('¿Volver a configuración? Se perderán los datos.')) location.reload();
 }
 
 function volverAGestionEquipos() {
-  if (torneoIniciado) {
-    if (equipo1 && equipo2 && tiempoActual > 0 && !torneoFinalizado) {
-      if (confirm('⚠️ Hay un partido en curso.\n\n¿Volver a la gestión de equipos?\nEl partido se pausará pero no se perderá.')) {
-        pausaActiva = true;
-        document.getElementById('btn-pausa').textContent = '▶';
-        mostrarPantalla('pantalla-equipos');
-      }
-    } else {
+  if (torneoIniciado && equipo1 && equipo2 && tiempoActual > 0 && !torneoFinalizado) {
+    if (confirm('⚠️ Hay un partido en curso.\n¿Volver a gestión de equipos? Se pausará.')) {
+      pausaActiva = true;
+      document.getElementById('btn-pausa').textContent = '▶';
       mostrarPantalla('pantalla-equipos');
     }
   } else {
@@ -1233,18 +1268,13 @@ function volverAGestionEquipos() {
 }
 
 function volverAlJuego() {
-  if (torneoFinalizado) {
-    mostrarPantalla('pantalla-campeon');
-  } else if (equipo1 && equipo2 && tiempoActual > 0) {
-    mostrarPantalla('pantalla-partido');
-  } else if (tiempoEspera > 0) {
-    mostrarPantalla('pantalla-espera');
-  } else {
-    mostrarPantalla('pantalla-equipos');
-  }
+  if (torneoFinalizado) mostrarPantalla('pantalla-campeon');
+  else if (equipo1 && equipo2 && tiempoActual > 0) mostrarPantalla('pantalla-partido');
+  else if (tiempoEspera > 0) mostrarPantalla('pantalla-espera');
+  else mostrarPantalla('pantalla-equipos');
 }
 
-// ============ COMPARTIR CAPTURAS ============
+// ============ COMPARTIR ============
 async function compartirFixture() {
   const elemento = document.getElementById('fixture-contenido-captura');
   try {
@@ -1252,18 +1282,13 @@ async function compartirFixture() {
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     const file = new File([blob], 'fixture-torneo.png', { type: 'image/png' });
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: 'Fixture del Torneo', text: '🏆 Resultado del Torneo Rey de la Cancha' });
+      await navigator.share({ files: [file], title: 'Fixture del Torneo', text: '🏆 Torneo Rey de la Cancha' });
     } else {
       const link = document.createElement('a');
-      link.download = 'fixture-torneo.png';
-      link.href = canvas.toDataURL();
-      link.click();
-      alert('📸 Imagen descargada. Ahora puedes compartirla.');
+      link.download = 'fixture-torneo.png'; link.href = canvas.toDataURL(); link.click();
+      alert('📸 Imagen descargada.');
     }
-  } catch (error) {
-    console.error('Error al compartir:', error);
-    alert('❌ Error al generar la captura');
-  }
+  } catch (e) { alert('❌ Error al generar captura'); }
 }
 
 async function compartirHistorial() {
@@ -1273,30 +1298,21 @@ async function compartirHistorial() {
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     const file = new File([blob], 'historial-torneo.png', { type: 'image/png' });
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: 'Historial del Torneo', text: '📋 Historial completo del Torneo Rey de la Cancha' });
+      await navigator.share({ files: [file], title: 'Historial del Torneo', text: '📋 Historial completo' });
     } else {
       const link = document.createElement('a');
-      link.download = 'historial-torneo.png';
-      link.href = canvas.toDataURL();
-      link.click();
-      alert('📸 Imagen descargada. Ahora puedes compartirla.');
+      link.download = 'historial-torneo.png'; link.href = canvas.toDataURL(); link.click();
+      alert('📸 Imagen descargada.');
     }
-  } catch (error) {
-    console.error('Error al compartir:', error);
-    alert('❌ Error al generar la captura');
-  }
+  } catch (e) { alert('❌ Error al generar captura'); }
 }
 
-// ============ FIXTURE / BRACKET ============
+// ============ FIXTURE ============
 function generarFixture() {
   if (equipos.length < 2) { alert('Necesitas al menos 2 equipos'); return; }
-  equipo1 = equipos[0];
-  equipo2 = equipos[1];
+  equipo1 = equipos[0]; equipo2 = equipos[1];
   colaEquipos = equipos.slice(2);
-  partidoActual = 1;
-  torneoFinalizado = false;
-  equipoCampeon = null;
-  torneoIniciado = true;
+  partidoActual = 1; torneoFinalizado = false; equipoCampeon = null; torneoIniciado = true;
   actualizarSeccionEquipos();
   renderizarBracket();
   mostrarPantalla('pantalla-fixture');
@@ -1312,194 +1328,127 @@ function renderizarBracket() {
   wrapper.innerHTML = '';
   document.getElementById('fixture-total-equipos').textContent = equipos.length + esquivos.length;
   document.getElementById('fixture-duracion').textContent = configTiempo;
-  
   const partidosJugados = historialPartidos.length;
-  const partidosPendientes = colaEquipos.length + esquivos.length;
   const hayPartidoEnCurso = (equipo1 && equipo2 && !torneoFinalizado);
-  document.getElementById('fixture-total-partidos').textContent = (partidosJugados + partidosPendientes + (hayPartidoEnCurso ? 1 : 0)) || (equipos.length - 1 + esquivos.length);
+  document.getElementById('fixture-total-partidos').textContent = (partidosJugados + colaEquipos.length + esquivos.length + (hayPartidoEnCurso ? 1 : 0)) || (equipos.length - 1 + esquivos.length);
   
   let ultimoGanadorConocido = null;
-  if (historialPartidos.length > 0) {
-    const ultimo = historialPartidos[historialPartidos.length - 1];
-    ultimoGanadorConocido = { nombre: ultimo.ganador };
-  }
+  if (historialPartidos.length > 0) ultimoGanadorConocido = { nombre: historialPartidos[historialPartidos.length - 1].ganador };
   
   if (historialPartidos.length > 0) {
-    const colJugados = document.createElement('div');
-    colJugados.className = 'bracket-columna';
-    colJugados.innerHTML = `<div class="bracket-columna-titulo">Jugados (${historialPartidos.length})</div>`;
-    const partidosDiv = document.createElement('div');
-    partidosDiv.className = 'bracket-partidos';
+    const col = document.createElement('div');
+    col.className = 'bracket-columna';
+    col.innerHTML = `<div class="bracket-columna-titulo">Jugados (${historialPartidos.length})</div>`;
+    const pd = document.createElement('div'); pd.className = 'bracket-partidos';
     historialPartidos.forEach(p => {
-      const eq1Gana = p.goles1 > p.goles2;
-      const eq2Gana = p.goles2 > p.goles1;
+      const g1 = p.goles1 > p.goles2, g2 = p.goles2 > p.goles1;
       const div = document.createElement('div');
       div.className = 'bracket-partido terminado';
-      let horaHtml = (p.fechaInicio || p.fechaFin) ? `<div class="bracket-partido-hora">${formatearHora(p.fechaInicio)} - ${formatearHora(p.fechaFin)}</div>` : '';
-      div.innerHTML = `
-        <div class="bracket-partido-numero">P${p.numero}</div>${horaHtml}
-        <div class="bracket-equipo ${eq1Gana ? 'ganador' : ''}"><span class="bracket-equipo-nombre">${p.equipo1}</span><span class="bracket-equipo-goles">${p.goles1}</span></div>
-        <div class="bracket-equipo ${eq2Gana ? 'ganador' : ''}"><span class="bracket-equipo-nombre">${p.equipo2}</span><span class="bracket-equipo-goles">${p.goles2}</span></div>
-      `;
-      partidosDiv.appendChild(div);
+      const horaHtml = (p.fechaInicio || p.fechaFin) ? `<div class="bracket-partido-hora">${formatearHora(p.fechaInicio)} - ${formatearHora(p.fechaFin)}</div>` : '';
+      div.innerHTML = `<div class="bracket-partido-numero">P${p.numero}</div>${horaHtml}
+        <div class="bracket-equipo ${g1 ? 'ganador' : ''}"><span class="bracket-equipo-nombre">${p.equipo1}</span><span class="bracket-equipo-goles">${p.goles1}</span></div>
+        <div class="bracket-equipo ${g2 ? 'ganador' : ''}"><span class="bracket-equipo-nombre">${p.equipo2}</span><span class="bracket-equipo-goles">${p.goles2}</span></div>`;
+      pd.appendChild(div);
     });
-    colJugados.appendChild(partidosDiv);
-    wrapper.appendChild(colJugados);
-    if ((equipo1 && equipo2 && !torneoFinalizado) || (torneoFinalizado && equipoCampeon)) {
-      const conector = document.createElement('div');
-      conector.className = 'bracket-conector';
-      conector.innerHTML = '→';
-      wrapper.appendChild(conector);
+    col.appendChild(pd); wrapper.appendChild(col);
+    if (hayPartidoEnCurso || (torneoFinalizado && equipoCampeon)) {
+      const c = document.createElement('div'); c.className = 'bracket-conector'; c.innerHTML = '→'; wrapper.appendChild(c);
     }
   }
   
-  if (equipo1 && equipo2 && !torneoFinalizado) {
-    const colCurso = document.createElement('div');
-    colCurso.className = 'bracket-columna';
-    colCurso.innerHTML = `<div class="bracket-columna-titulo">En Curso</div>`;
-    const partidosDiv = document.createElement('div');
-    partidosDiv.className = 'bracket-partidos';
+  if (hayPartidoEnCurso) {
+    const col = document.createElement('div');
+    col.className = 'bracket-columna';
+    col.innerHTML = `<div class="bracket-columna-titulo">En Curso</div>`;
+    const pd = document.createElement('div'); pd.className = 'bracket-partidos';
     const div = document.createElement('div');
     div.className = 'bracket-partido en-curso';
-    let horaHtml = fechaInicioPartido ? `<div class="bracket-partido-hora">Inicio: ${formatearHora(fechaInicioPartido)}</div>` : '';
-    let indicadorAdicional = esTiempoAdicional ? `<div class="bracket-partido-hora" style="color:var(--color-amarillo);">⚡ TIEMPO ADICIONAL</div>` : '';
-    div.innerHTML = `
-      <div class="bracket-partido-numero">Partido ${partidoActual}</div>${horaHtml}${indicadorAdicional}
+    const horaHtml = fechaInicioPartido ? `<div class="bracket-partido-hora">Inicio: ${formatearHora(fechaInicioPartido)}</div>` : '';
+    const indAd = esTiempoAdicional ? `<div class="bracket-partido-hora" style="color:var(--color-amarillo);">⚡ TIEMPO ADICIONAL</div>` : '';
+    div.innerHTML = `<div class="bracket-partido-numero">Partido ${partidoActual}</div>${horaHtml}${indAd}
       <div class="bracket-equipo"><span class="bracket-equipo-nombre">${equipo1.nombre}</span><span class="bracket-equipo-goles">${golesEquipo1}</span></div>
-      <div class="bracket-equipo"><span class="bracket-equipo-nombre">${equipo2.nombre}</span><span class="bracket-equipo-goles">${golesEquipo2}</span></div>
-    `;
-    partidosDiv.appendChild(div);
-    colCurso.appendChild(partidosDiv);
-    wrapper.appendChild(colCurso);
-    const conector = document.createElement('div');
-    conector.className = 'bracket-conector';
-    conector.innerHTML = '→';
-    wrapper.appendChild(conector);
+      <div class="bracket-equipo"><span class="bracket-equipo-nombre">${equipo2.nombre}</span><span class="bracket-equipo-goles">${golesEquipo2}</span></div>`;
+    pd.appendChild(div); col.appendChild(pd); wrapper.appendChild(col);
+    const c = document.createElement('div'); c.className = 'bracket-conector'; c.innerHTML = '→'; wrapper.appendChild(c);
   }
   
   if (colaEquipos.length > 0) {
-    const colPendientes = document.createElement('div');
-    colPendientes.className = 'bracket-columna';
-    colPendientes.innerHTML = `<div class="bracket-columna-titulo">Pendientes (${colaEquipos.length})</div>`;
-    const partidosDiv = document.createElement('div');
-    partidosDiv.className = 'bracket-partidos';
-    let nombreEquipoAvanza = 'Por definir';
-    let esPorDefinir = true;
-    if (ultimoGanadorConocido && !hayPartidoEnCurso) {
-      nombreEquipoAvanza = ultimoGanadorConocido.nombre;
-      esPorDefinir = false;
-    }
-    colaEquipos.forEach((equipo, index) => {
-      const numPartido = partidoActual + index + (equipo1 && equipo2 && !torneoFinalizado ? 1 : 0);
+    const col = document.createElement('div');
+    col.className = 'bracket-columna';
+    col.innerHTML = `<div class="bracket-columna-titulo">Pendientes (${colaEquipos.length})</div>`;
+    const pd = document.createElement('div'); pd.className = 'bracket-partidos';
+    let nombreAvanza = 'Por definir', porDefinir = true;
+    if (ultimoGanadorConocido && !hayPartidoEnCurso) { nombreAvanza = ultimoGanadorConocido.nombre; porDefinir = false; }
+    colaEquipos.forEach((eq, i) => {
+      const num = partidoActual + i + (hayPartidoEnCurso ? 1 : 0);
       const div = document.createElement('div');
       div.className = 'bracket-partido pendiente';
-      div.innerHTML = `
-        <div class="bracket-partido-numero">Partido ${numPartido}</div>
-        <div class="bracket-equipo ${esPorDefinir ? 'por-definir' : ''}"><span class="bracket-equipo-nombre">${nombreEquipoAvanza}</span><span class="bracket-equipo-goles">-</span></div>
-        <div class="bracket-equipo"><span class="bracket-equipo-nombre">${equipo.nombre}</span><span class="bracket-equipo-goles">-</span></div>
-      `;
-      partidosDiv.appendChild(div);
-      nombreEquipoAvanza = 'Por definir';
-      esPorDefinir = true;
+      div.innerHTML = `<div class="bracket-partido-numero">Partido ${num}</div>
+        <div class="bracket-equipo ${porDefinir ? 'por-definir' : ''}"><span class="bracket-equipo-nombre">${nombreAvanza}</span><span class="bracket-equipo-goles">-</span></div>
+        <div class="bracket-equipo"><span class="bracket-equipo-nombre">${eq.nombre}</span><span class="bracket-equipo-goles">-</span></div>`;
+      pd.appendChild(div);
+      nombreAvanza = 'Por definir'; porDefinir = true;
     });
-    colPendientes.appendChild(partidosDiv);
-    wrapper.appendChild(colPendientes);
-    const conector = document.createElement('div');
-    conector.className = 'bracket-conector';
-    conector.innerHTML = '→';
-    wrapper.appendChild(conector);
+    col.appendChild(pd); wrapper.appendChild(col);
+    const c = document.createElement('div'); c.className = 'bracket-conector'; c.innerHTML = '→'; wrapper.appendChild(c);
   }
   
   if (esquivos.length > 0) {
-    const colEsquivos = document.createElement('div');
-    colEsquivos.className = 'bracket-columna';
-    colEsquivos.innerHTML = `<div class="bracket-columna-titulo">Esquivos (${esquivos.length})</div>`;
-    const partidosDiv = document.createElement('div');
-    partidosDiv.className = 'bracket-partidos';
-    esquivos.forEach((equipo, index) => {
-      const numPartido = partidoActual + colaEquipos.length + index + (equipo1 && equipo2 && !torneoFinalizado ? 1 : 0);
+    const col = document.createElement('div');
+    col.className = 'bracket-columna';
+    col.innerHTML = `<div class="bracket-columna-titulo">Esquivos (${esquivos.length})</div>`;
+    const pd = document.createElement('div'); pd.className = 'bracket-partidos';
+    esquivos.forEach((eq, i) => {
+      const num = partidoActual + colaEquipos.length + i + (hayPartidoEnCurso ? 1 : 0);
       const div = document.createElement('div');
       div.className = 'bracket-partido esquivo';
-      div.innerHTML = `
-        <div class="bracket-partido-numero">P${numPartido} (Esquivo)</div>
+      div.innerHTML = `<div class="bracket-partido-numero">P${num} (Esquivo)</div>
         <div class="bracket-equipo por-definir"><span class="bracket-equipo-nombre">Ganador anterior</span><span class="bracket-equipo-goles">-</span></div>
-        <div class="bracket-equipo"><span class="bracket-equipo-nombre">${equipo.nombre}</span><span class="bracket-equipo-goles">-</span></div>
-      `;
-      partidosDiv.appendChild(div);
+        <div class="bracket-equipo"><span class="bracket-equipo-nombre">${eq.nombre}</span><span class="bracket-equipo-goles">-</span></div>`;
+      pd.appendChild(div);
     });
-    colEsquivos.appendChild(partidosDiv);
-    wrapper.appendChild(colEsquivos);
-    const conector = document.createElement('div');
-    conector.className = 'bracket-conector';
-    conector.innerHTML = '→';
-    wrapper.appendChild(conector);
+    col.appendChild(pd); wrapper.appendChild(col);
+    const c = document.createElement('div'); c.className = 'bracket-conector'; c.innerHTML = '→'; wrapper.appendChild(c);
   }
   
-  const colCampeon = document.createElement('div');
-  colCampeon.className = 'bracket-campeon';
-  let campeonNombre = 'Por definir';
-  let campeonClase = 'vacio';
-  if (torneoFinalizado && equipoCampeon) {
-    campeonNombre = equipoCampeon.nombre;
-    campeonClase = '';
-  }
-  colCampeon.innerHTML = `
-    <div class="bracket-campeon-trofeo">🏆</div>
-    <div class="bracket-campeon-label">Campeón</div>
-    <div class="bracket-campeon-nombre ${campeonClase}">${campeonNombre}</div>
-  `;
-  wrapper.appendChild(colCampeon);
+  const colC = document.createElement('div');
+  colC.className = 'bracket-campeon';
+  let nomC = 'Por definir', clsC = 'vacio';
+  if (torneoFinalizado && equipoCampeon) { nomC = equipoCampeon.nombre; clsC = ''; }
+  colC.innerHTML = `<div class="bracket-campeon-trofeo">🏆</div><div class="bracket-campeon-label">Campeón</div><div class="bracket-campeon-nombre ${clsC}">${nomC}</div>`;
+  wrapper.appendChild(colC);
   
   const btnIniciar = document.getElementById('btn-iniciar-fixture');
-  const accionesDiv = document.getElementById('fixture-acciones');
-  const btnCompartir = document.getElementById('btn-compartir-fixture');
-  
+  const acciones = document.getElementById('fixture-acciones');
+  const btnComp = document.getElementById('btn-compartir-fixture');
   if (torneoFinalizado && equipoCampeon) {
     btnIniciar.textContent = `👑 CAMPEÓN: ${equipoCampeon.nombre}`;
     btnIniciar.onclick = () => mostrarCampeon(equipoCampeon);
-    accionesDiv.style.display = 'flex';
-    btnCompartir.style.display = 'flex';
-  } else if (equipo1 && equipo2 && tiempoActual === 0 && historialPartidos.length === 0) {
+    acciones.style.display = 'flex'; btnComp.style.display = 'flex';
+  } else if (hayPartidoEnCurso && tiempoActual === 0 && historialPartidos.length === 0) {
     btnIniciar.textContent = `▶ INICIAR PARTIDO 1: ${equipo1.nombre} VS ${equipo2.nombre}`;
     btnIniciar.onclick = iniciarDesdeFixture;
-    accionesDiv.style.display = 'flex';
-    btnCompartir.style.display = 'none';
-  } else if (equipo1 && equipo2 && tiempoActual > 0 && !torneoFinalizado) {
+    acciones.style.display = 'flex'; btnComp.style.display = 'none';
+  } else if (hayPartidoEnCurso) {
     btnIniciar.textContent = '→ VOLVER AL PARTIDO EN CURSO';
     btnIniciar.onclick = () => mostrarPantalla('pantalla-partido');
-    accionesDiv.style.display = 'flex';
-    btnCompartir.style.display = 'none';
-  } else {
-    accionesDiv.style.display = 'none';
-    btnCompartir.style.display = 'none';
-  }
+    acciones.style.display = 'flex'; btnComp.style.display = 'none';
+  } else { acciones.style.display = 'none'; btnComp.style.display = 'none'; }
 }
 
 function iniciarDesdeFixture() {
-  if (equipo1 && equipo2 && tiempoActual === 0 && historialPartidos.length === 0) {
-    iniciarPartido();
-  } else if (equipo1 && equipo2 && tiempoActual > 0 && !torneoFinalizado) {
-    mostrarPantalla('pantalla-partido');
-  }
+  if (equipo1 && equipo2 && tiempoActual === 0 && historialPartidos.length === 0) iniciarPartido();
+  else if (equipo1 && equipo2) mostrarPantalla('pantalla-partido');
 }
 
-function verFixture() {
-  cerrarModal();
-  renderizarBracket();
-  mostrarPantalla('pantalla-fixture');
-}
+function verFixture() { cerrarModal(); renderizarBracket(); mostrarPantalla('pantalla-fixture'); }
 
-// ============ GESTIÓN DE EQUIPOS ============
+// ============ EQUIPOS ============
 function actualizarSeccionEquipos() {
-  const seccionAgregar = document.getElementById('seccion-agregar-equipos');
-  const seccionOrden = document.getElementById('seccion-orden');
-  if (torneoIniciado) {
-    if (seccionAgregar) seccionAgregar.style.display = 'none';
-    if (seccionOrden) seccionOrden.style.display = 'none';
-  } else {
-    if (seccionAgregar) seccionAgregar.style.display = 'block';
-    if (seccionOrden) seccionOrden.style.display = equipos.length >= 2 ? 'block' : 'none';
-  }
+  const add = document.getElementById('seccion-agregar-equipos');
+  const ord = document.getElementById('seccion-orden');
+  if (torneoIniciado) { add.style.display = 'none'; ord.style.display = 'none'; }
+  else { add.style.display = 'block'; ord.style.display = equipos.length >= 2 ? 'block' : 'none'; }
 }
 
 function iniciarTorneo() {
@@ -1514,38 +1463,29 @@ function agregarEquipo() {
   const input = document.getElementById('nombre-nuevo-equipo');
   const nombre = input.value.trim();
   if (nombre) {
-    equipos.push({ id: Date.now(), nombre: nombre, ganados: 0, goles: 0, partidos: 0 });
+    equipos.push({ id: Date.now(), nombre, ganados: 0, goles: 0, partidos: 0 });
     input.value = '';
     actualizarListaEquipos();
   }
 }
 
-function eliminarEquipo(id) {
-  equipos = equipos.filter(e => e.id !== id);
-  actualizarListaEquipos();
-}
+function eliminarEquipo(id) { equipos = equipos.filter(e => e.id !== id); actualizarListaEquipos(); }
 
 function actualizarListaEquipos() {
   const lista = document.getElementById('lista-equipos');
-  const total = document.getElementById('total-equipos');
   lista.innerHTML = '';
-  total.textContent = equipos.length;
-  equipos.forEach((equipo, index) => {
+  document.getElementById('total-equipos').textContent = equipos.length;
+  equipos.forEach((eq, i) => {
     const div = document.createElement('div');
     div.className = 'equipo-item';
-    div.innerHTML = `
-      <div class="equipo-numero">${index + 1}</div>
-      <div class="equipo-nombre">${equipo.nombre}</div>
-      <button class="equipo-eliminar" onclick="eliminarEquipo(${equipo.id})">×</button>
-    `;
+    div.innerHTML = `<div class="equipo-numero">${i + 1}</div><div class="equipo-nombre">${eq.nombre}</div>
+      <button class="equipo-eliminar" onclick="eliminarEquipo(${eq.id})">×</button>`;
     lista.appendChild(div);
   });
   actualizarSeccionEquipos();
 }
 
-function ordenCreacion() {
-  alert('✓ Equipos en orden de creación: ' + equipos.map(e => e.nombre).join(', '));
-}
+function ordenCreacion() { alert('✓ Orden de creación: ' + equipos.map(e => e.nombre).join(', ')); }
 
 function ordenAleatorio() {
   for (let i = equipos.length - 1; i > 0; i--) {
@@ -1564,14 +1504,8 @@ function iniciarPartido() {
   document.getElementById('nombre-equipo2').textContent = equipo2.nombre;
   document.getElementById('goles-equipo1').textContent = '0';
   document.getElementById('goles-equipo2').textContent = '0';
-  
-  golesEquipo1 = 0;
-  golesEquipo2 = 0;
-  golesRegistro = [];
-  tiempoActual = 0;
-  pausaActiva = false;
-  esTiempoAdicional = false;
-  
+  golesEquipo1 = 0; golesEquipo2 = 0; golesRegistro = [];
+  tiempoActual = 0; pausaActiva = false; esTiempoAdicional = false;
   document.getElementById('btn-pausa').textContent = '⏸';
   document.getElementById('tiempo-partido').classList.remove('aviso', 'empate');
   document.getElementById('historial-goles').style.display = 'none';
@@ -1579,7 +1513,6 @@ function iniciarPartido() {
   document.getElementById('aviso-empate').style.display = 'none';
   document.getElementById('indicador-adicional').textContent = '';
   document.getElementById('tiempo-extra-display').style.display = 'none';
-  
   mostrarPantalla('pantalla-partido');
   actualizarDisplayTiempo();
   iniciarIntervaloPartido();
@@ -1591,19 +1524,39 @@ function iniciarIntervaloPartido() {
     if (!pausaActiva) {
       tiempoActual++;
       actualizarDisplayTiempo();
-      if (tiempoActual === configTiempo * 60 - 10 && !esTiempoAdicional) {
-        reproducirAviso();
+      const limite = configTiempo * 60;
+      if (!esTiempoAdicional && tiempoActual >= limite - 10 && tiempoActual < limite) {
+        reproducirPitido(0.1, 1000);
         document.getElementById('tiempo-partido').classList.add('aviso');
-        setTimeout(() => { document.getElementById('tiempo-partido').classList.remove('aviso'); }, 5000);
+      }
+      if (tiempoActual === limite && !esTiempoAdicional) {
+        document.getElementById('tiempo-partido').classList.remove('aviso');
+        esTiempoAdicional = true;
+        document.getElementById('indicador-adicional').textContent = ' ⚡ ADICIONAL';
+        document.getElementById('tiempo-extra-display').style.display = 'block';
+        document.getElementById('tiempo-extra-display').textContent = '+00:00';
       }
     }
   }, 1000);
 }
 
 function actualizarDisplayTiempo() {
-  const m = Math.floor(tiempoActual / 60).toString().padStart(2, '0');
-  const s = (tiempoActual % 60).toString().padStart(2, '0');
-  document.getElementById('tiempo-base-display').textContent = `${m}:${s}`;
+  const limite = configTiempo * 60;
+  if (tiempoActual <= limite) {
+    const m = Math.floor(tiempoActual / 60).toString().padStart(2, '0');
+    const s = (tiempoActual % 60).toString().padStart(2, '0');
+    document.getElementById('tiempo-base-display').textContent = `${m}:${s}`;
+    document.getElementById('tiempo-extra-display').style.display = 'none';
+  } else {
+    const bM = Math.floor(limite / 60).toString().padStart(2, '0');
+    const bS = (limite % 60).toString().padStart(2, '0');
+    const extra = tiempoActual - limite;
+    const eM = Math.floor(extra / 60).toString().padStart(2, '0');
+    const eS = (extra % 60).toString().padStart(2, '0');
+    document.getElementById('tiempo-base-display').textContent = `${bM}:${bS}`;
+    document.getElementById('tiempo-extra-display').textContent = `+${eM}:${eS}`;
+    document.getElementById('tiempo-extra-display').style.display = 'block';
+  }
 }
 
 function togglePausa() {
@@ -1611,71 +1564,48 @@ function togglePausa() {
   document.getElementById('btn-pausa').textContent = pausaActiva ? '▶' : '⏸';
 }
 
-function agregarGol(equipo) {
-  if (equipo === 1) {
-    golesEquipo1++;
-    document.getElementById('goles-equipo1').textContent = golesEquipo1;
-  } else {
-    golesEquipo2++;
-    document.getElementById('goles-equipo2').textContent = golesEquipo2;
-  }
+function agregarGol(eq) {
+  if (eq === 1) { golesEquipo1++; document.getElementById('goles-equipo1').textContent = golesEquipo1; }
+  else { golesEquipo2++; document.getElementById('goles-equipo2').textContent = golesEquipo2; }
   const m = Math.floor(tiempoActual / 60).toString().padStart(2, '0');
   const s = (tiempoActual % 60).toString().padStart(2, '0');
-  const nombreEquipo = equipo === 1 ? equipo1.nombre : equipo2.nombre;
-  golesRegistro.push({ minuto: `${m}:${s}`, equipo: equipo, nombre: nombreEquipo });
+  golesRegistro.push({ minuto: `${m}:${s}`, equipo: eq, nombre: eq === 1 ? equipo1.nombre : equipo2.nombre });
   actualizarHistorialGoles();
   reproducirGol();
-  if (golesEquipo1 !== golesEquipo2) {
-    document.getElementById('tiempo-partido').classList.remove('empate');
-  }
+  if (golesEquipo1 !== golesEquipo2) document.getElementById('tiempo-partido').classList.remove('empate');
 }
 
-function quitarGol(equipo) {
+function quitarGol(eq) {
   for (let i = golesRegistro.length - 1; i >= 0; i--) {
-    if (golesRegistro[i].equipo === equipo) {
+    if (golesRegistro[i].equipo === eq) {
       golesRegistro.splice(i, 1);
-      if (equipo === 1) {
-        golesEquipo1 = Math.max(0, golesEquipo1 - 1);
-        document.getElementById('goles-equipo1').textContent = golesEquipo1;
-      } else {
-        golesEquipo2 = Math.max(0, golesEquipo2 - 1);
-        document.getElementById('goles-equipo2').textContent = golesEquipo2;
-      }
+      if (eq === 1) { golesEquipo1 = Math.max(0, golesEquipo1 - 1); document.getElementById('goles-equipo1').textContent = golesEquipo1; }
+      else { golesEquipo2 = Math.max(0, golesEquipo2 - 1); document.getElementById('goles-equipo2').textContent = golesEquipo2; }
       actualizarHistorialGoles();
       return;
     }
   }
-  alert('No hay goles de este equipo para quitar');
 }
 
 function actualizarHistorialGoles() {
-  const contenedor = document.getElementById('historial-goles');
+  const cont = document.getElementById('historial-goles');
   const lista = document.getElementById('lista-goles');
-  if (golesRegistro.length === 0) {
-    contenedor.style.display = 'none';
-    return;
-  }
-  contenedor.style.display = 'block';
+  if (golesRegistro.length === 0) { cont.style.display = 'none'; return; }
+  cont.style.display = 'block';
   lista.innerHTML = '';
-  golesRegistro.forEach((gol) => {
+  golesRegistro.forEach(g => {
     const div = document.createElement('div');
     div.className = 'gol-item';
-    div.innerHTML = `<span class="minuto">${gol.minuto}'</span><span class="equipo-gol eq${gol.equipo}">⚽ ${gol.nombre}</span>`;
+    div.innerHTML = `<span class="minuto">${g.minuto}'</span><span class="equipo-gol eq${g.equipo}">⚽ ${g.nombre}</span>`;
     lista.appendChild(div);
   });
 }
 
-function agregarTiempoExtra() {
-  configTiempo++;
-  alert(`✓ Tiempo extendido a ${configTiempo} minutos`);
-}
+function agregarTiempoExtra() { configTiempo++; alert(`✓ Tiempo extendido a ${configTiempo} minutos`); }
 
 function intentarFinalizarPartido() {
-  if (golesEquipo1 === golesEquipo2) {
-    mostrarModalEmpate();
-  } else {
-    finalizarPartido();
-  }
+  if (golesEquipo1 === golesEquipo2) mostrarModalEmpate();
+  else finalizarPartido();
 }
 
 function mostrarModalEmpate() {
@@ -1688,28 +1618,22 @@ function mostrarModalEmpate() {
   document.getElementById('modal-empate').classList.add('activo');
 }
 
-function usarTiempoDefault() {
-  document.getElementById('empate-tiempo').value = 5;
-  tiempoAdicionalConfig = 5;
-  iniciarTiempoAdicional();
-}
+function usarTiempoDefault() { document.getElementById('empate-tiempo').value = 5; tiempoAdicionalConfig = 5; iniciarTiempoAdicional(); }
 
 function iniciarTiempoAdicional() {
-  const minutos = parseInt(document.getElementById('empate-tiempo').value) || 5;
-  tiempoAdicionalConfig = minutos;
+  const min = parseInt(document.getElementById('empate-tiempo').value) || 5;
+  tiempoAdicionalConfig = min;
   cerrarModal();
   esTiempoAdicional = true;
-  configTiempo = minutos;
+  configTiempo = min;
   tiempoActual = 0;
   pausaActiva = false;
-  
   document.getElementById('aviso-empate').style.display = 'block';
   document.getElementById('tiempo-partido').classList.add('empate');
   document.getElementById('indicador-adicional').textContent = ' ⚡ ADICIONAL';
-  document.getElementById('tiempo-extra-display').style.display = 'inline';
-  document.getElementById('tiempo-extra-display').textContent = `+00:00`;
+  document.getElementById('tiempo-extra-display').style.display = 'block';
+  document.getElementById('tiempo-extra-display').textContent = '+00:00';
   document.getElementById('btn-pausa').textContent = '⏸';
-  
   iniciarIntervaloPartido();
   reproducirAviso();
 }
@@ -1717,49 +1641,29 @@ function iniciarTiempoAdicional() {
 function finalizarPartido() {
   clearInterval(intervaloPrincipal);
   reproducirPitidoFinal();
-  const fechaFinPartido = new Date();
-  
+  const fechaFin = new Date();
   let ganador, perdedor;
   if (golesEquipo1 > golesEquipo2) { ganador = equipo1; perdedor = equipo2; }
   else if (golesEquipo2 > golesEquipo1) { ganador = equipo2; perdedor = equipo1; }
   else { ganador = Math.random() > 0.5 ? equipo1 : equipo2; perdedor = ganador === equipo1 ? equipo2 : equipo1; }
-  
-  ganador.ganados++;
-  ganador.goles += (ganador === equipo1 ? golesEquipo1 : golesEquipo2);
-  ganador.partidos++;
+  ganador.ganados++; ganador.goles += (ganador === equipo1 ? golesEquipo1 : golesEquipo2); ganador.partidos++;
   perdedor.partidos++;
-  
-  const esEsquivoActual = esquivos.some(e => e.nombre === equipo2.nombre);
   historialPartidos.push({
-    numero: partidoActual,
-    equipo1: equipo1.nombre,
-    equipo2: equipo2.nombre,
-    goles1: golesEquipo1,
-    goles2: golesEquipo2,
-    ganador: ganador.nombre,
-    golesRegistro: [...golesRegistro],
-    esEsquivo: esEsquivoActual,
-    fechaInicio: fechaInicioPartido,
-    fechaFin: fechaFinPartido,
-    fueTiempoAdicional: esTiempoAdicional,
-    duracionAdicional: esTiempoAdicional ? tiempoAdicionalConfig : 0
+    numero: partidoActual, equipo1: equipo1.nombre, equipo2: equipo2.nombre,
+    goles1: golesEquipo1, goles2: golesEquipo2, ganador: ganador.nombre,
+    golesRegistro: [...golesRegistro], esEsquivo: esquivos.some(e => e.nombre === equipo2.nombre),
+    fechaInicio: fechaInicioPartido, fechaFin,
+    fueTiempoAdicional: esTiempoAdicional, duracionAdicional: esTiempoAdicional ? tiempoAdicionalConfig : 0
   });
-  
   esTiempoAdicional = false;
-  
-  if (colaEquipos.length > 0 || esquivos.length > 0) {
-    prepararSiguientePartido(ganador);
-  } else {
-    torneoFinalizado = true;
-    equipoCampeon = ganador;
-    mostrarCampeon(ganador);
-  }
+  if (colaEquipos.length > 0 || esquivos.length > 0) prepararSiguientePartido(ganador);
+  else { torneoFinalizado = true; equipoCampeon = ganador; mostrarCampeon(ganador); }
 }
 
 function prepararSiguientePartido(ganador) {
   equipo1 = ganador;
-  if (esquivos.length > 0) { equipo2 = esquivos.shift(); }
-  else if (colaEquipos.length > 0) { equipo2 = colaEquipos.shift(); }
+  if (esquivos.length > 0) equipo2 = esquivos.shift();
+  else if (colaEquipos.length > 0) equipo2 = colaEquipos.shift();
   partidoActual++;
   mostrarPantallaEspera();
 }
@@ -1784,8 +1688,8 @@ function iniciarIntervaloEspera() {
       actualizarDisplayEspera();
       if (tiempoEspera <= 0) {
         clearInterval(intervaloEspera);
-        if (equipo2) { iniciarPartido(); }
-        else { alert('No hay más equipos disponibles'); }
+        if (equipo2) iniciarPartido();
+        else alert('No hay más equipos disponibles');
       }
     }
   }, 1000);
@@ -1797,81 +1701,57 @@ function actualizarDisplayEspera() {
   document.getElementById('tiempo-espera').textContent = `${m}:${s}`;
 }
 
-function pausarEspera() {
-  pausaEsperaActiva = !pausaEsperaActiva;
-  document.getElementById('btn-pausa-espera').textContent = pausaEsperaActiva ? '▶' : '⏸';
-}
-
-function continuarEspera() {
-  pausaEsperaActiva = false;
-  document.getElementById('btn-pausa-espera').textContent = '⏸';
-}
-
-function saltarEspera() {
-  clearInterval(intervaloEspera);
-  if (equipo2) { iniciarPartido(); }
-  else { alert('No hay más equipos disponibles'); }
-}
+function pausarEspera() { pausaEsperaActiva = !pausaEsperaActiva; document.getElementById('btn-pausa-espera').textContent = pausaEsperaActiva ? '▶' : '⏸'; }
+function continuarEspera() { pausaEsperaActiva = false; document.getElementById('btn-pausa-espera').textContent = '⏸'; }
+function saltarEspera() { clearInterval(intervaloEspera); if (equipo2) iniciarPartido(); else alert('No hay más equipos'); }
 
 // ============ HISTORIAL ============
 function verHistorial() {
   cerrarModal();
   const lista = document.getElementById('lista-historial');
-  const accionesDiv = document.getElementById('historial-acciones');
+  const acciones = document.getElementById('historial-acciones');
   lista.innerHTML = '';
-  
   if (historialPartidos.length === 0) {
-    lista.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 4vh;">No hay partidos jugados aún</div>';
-    accionesDiv.style.display = 'none';
+    lista.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:4vh;">No hay partidos jugados aún</div>';
+    acciones.style.display = 'none';
   } else {
-    historialPartidos.forEach(partido => {
+    historialPartidos.forEach(p => {
       const div = document.createElement('div');
-      div.className = `partido-historial ${partido.esEsquivo ? 'esquivo' : ''}`;
-      let horarioHtml = (partido.fechaInicio || partido.fechaFin) ? `<div class="horario">🕐 ${formatearHora(partido.fechaInicio)} - ${formatearHora(partido.fechaFin)}</div>` : '';
-      let adicionalHtml = partido.fueTiempoAdicional ? `<div class="horario" style="color:var(--color-amarillo);">⚡ Tiempo adicional: ${partido.duracionAdicional} min</div>` : '';
+      div.className = `partido-historial ${p.esEsquivo ? 'esquivo' : ''}`;
+      const horario = (p.fechaInicio || p.fechaFin) ? `<div class="horario">🕐 ${formatearHora(p.fechaInicio)} - ${formatearHora(p.fechaFin)}</div>` : '';
+      const adicional = p.fueTiempoAdicional ? `<div class="horario" style="color:var(--color-amarillo);">⚡ Adicional: ${p.duracionAdicional} min</div>` : '';
       let golesHtml = '';
-      if (partido.golesRegistro && partido.golesRegistro.length > 0) {
-        golesHtml = '<div style="margin-top: 0.8vh; font-size: 0.8em; color: var(--text-secondary);">';
-        partido.golesRegistro.forEach(gol => { golesHtml += `${gol.minuto}' ⚽ ${gol.nombre} | `; });
+      if (p.golesRegistro && p.golesRegistro.length > 0) {
+        golesHtml = '<div style="margin-top:0.8vh;font-size:0.8em;color:var(--text-secondary);">';
+        p.golesRegistro.forEach(g => { golesHtml += `${g.minuto}' ⚽ ${g.nombre} | `; });
         golesHtml = golesHtml.slice(0, -3) + '</div>';
       }
-      div.innerHTML = `
-        <div class="info">
-          <span class="numero">Partido ${partido.numero}</span>
-          ${partido.esEsquivo ? '<span class="tipo">Esquivo</span>' : ''}
-          ${horarioHtml}${adicionalHtml}
-        </div>
-        <div class="resultado">${partido.equipo1} ${partido.goles1} - ${partido.goles2} ${partido.equipo2}</div>
-        <div class="ganador">✓ Ganador: ${partido.ganador}</div>
-        ${golesHtml}
-      `;
+      div.innerHTML = `<div class="info"><span class="numero">Partido ${p.numero}</span>${p.esEsquivo ? '<span class="tipo">Esquivo</span>' : ''}${horario}${adicional}</div>
+        <div class="resultado">${p.equipo1} ${p.goles1} - ${p.goles2} ${p.equipo2}</div>
+        <div class="ganador">✓ Ganador: ${p.ganador}</div>${golesHtml}`;
       lista.appendChild(div);
     });
-    accionesDiv.style.display = 'flex';
+    acciones.style.display = 'flex';
   }
   mostrarPantalla('pantalla-historial');
 }
 
 // ============ CAMPEÓN ============
-function mostrarCampeon(campeon) {
-  document.getElementById('nombre-campeon').textContent = campeon.nombre;
-  document.getElementById('stats-ganados').textContent = campeon.ganados;
-  document.getElementById('stats-goles').textContent = campeon.goles;
-  document.getElementById('stats-partidos').textContent = campeon.partidos;
+function mostrarCampeon(c) {
+  document.getElementById('nombre-campeon').textContent = c.nombre;
+  document.getElementById('stats-ganados').textContent = c.ganados;
+  document.getElementById('stats-goles').textContent = c.goles;
+  document.getElementById('stats-partidos').textContent = c.partidos;
   mostrarPantalla('pantalla-campeon');
 }
 
-function reiniciarTorneo() {
-  if (confirm('¿Reiniciar todo el torneo?')) {
-    location.reload();
-  }
-}
+function reiniciarTorneo() { if (confirm('¿Reiniciar todo el torneo?')) location.reload(); }
 
-// Inicializar
 document.addEventListener('DOMContentLoaded', () => {
   aplicarTema();
   iniciarRelojHora();
   actualizarIndicadorWakeLock();
+  actualizarBotonesInstalacion();
 });
 </script>
 
