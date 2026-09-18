@@ -618,10 +618,12 @@
 </head>
 <body>
 
-<video id="video-fallback" loop muted playsinline>
+
+<video id="video-fallback" loop muted playsinline
+  style="position:fixed; top:0; left:0; width:1px; height:1px; opacity:0; pointer-events:none; z-index:-1;">
   <source src="data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAB1tZGF0AAAA" type="video/mp4">
 </video>
-
+  
 <div id="modal-opciones" class="modal-overlay">
   <div class="modal">
     <h2>⚙️ OPCIONES</h2>
